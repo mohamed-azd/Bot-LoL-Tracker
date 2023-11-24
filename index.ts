@@ -1,0 +1,47 @@
+import { Client, GatewayIntentBits, TextChannel } from "discord.js";
+import Summoner from "./classes/entity/Summoner";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const channelId: string | any = process.env.CHANNEL_ID;
+
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates],
+});
+
+const token = process.env.BOT_TOKEN;
+
+const summoners = [new Summoner("Waziio"), new Summoner("MY ZED GOT U"), new Summoner("Bald Chicken")];
+
+client.on("ready", async () => {
+  try {
+    console.log("Bot lancé");
+    summoners.forEach(async (summoner) => {
+      await summoner.loadData();
+      console.log(`Summoner ${summoner.getName()} initialisé !`);
+    });
+    await track(summoners);
+  } catch (err: any) {
+    console.log(err);
+  }
+});
+
+client.on("messageCreate", (message) => {
+  if (message.content.toLowerCase().includes("samuel") && !message.author.bot) {
+    message.reply("https://tenor.com/view/samuel-funny-dog-smile-happy-gif-17384183");
+  }
+});
+
+async function track(summoners: Summoner[]) {
+  const channel: TextChannel | any = client.channels.cache.get(channelId);
+  setInterval(async () => {
+    console.log("Tracking ...");
+    summoners.forEach(async (summoner) => {
+      const changes = await summoner.check();
+      if (changes) channel.send(changes.toString());
+    });
+  }, 30000);
+}
+
+client.login(token);
