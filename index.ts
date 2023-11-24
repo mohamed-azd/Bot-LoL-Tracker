@@ -1,4 +1,5 @@
 import { Client, GatewayIntentBits, TextChannel } from "discord.js";
+import express, { Request, Response } from "express";
 import Summoner from "./classes/entity/Summoner";
 import dotenv from "dotenv";
 
@@ -43,5 +44,21 @@ async function track(summoners: Summoner[]) {
     });
   }, 30000);
 }
+
+const app = express();
+const port = 8000; // Port de contrôle de santé
+
+// Health check endpoint
+app.get("/health", (req: Request, res: Response) => {
+  if (client.isReady()) {
+    res.status(200).send("Bot is healthy");
+  } else {
+    res.status(500).send("Bot is not healthy");
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Serveur de contrôle de santé en cours d'exécution sur le port ${port}`);
+});
 
 client.login(token);
