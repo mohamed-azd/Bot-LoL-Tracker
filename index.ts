@@ -47,7 +47,7 @@ async function track(summoners: Summoner[]) {
       console.log(changes);
       if (changes) channel.send({ embeds: [changes] });
     });
-  }, 10000);
+  }, 30000);
 }
 
 const app = express();
