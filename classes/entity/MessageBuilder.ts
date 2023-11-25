@@ -35,7 +35,7 @@ export default class MessageBuilder {
 
   buildLp(gameResult: GameResult, value: number): EmbedBuilder {
     if (gameResult === GameResult.DEFEAT) {
-      this.embedBuilder.addFields({ name: ' ', value: `**- ${value} LP**` }).setColor("Red");
+      this.embedBuilder.addFields({ name: ' ', value: `**-${value} LP**` }).setColor("Red");
     } else if (gameResult === GameResult.VICTORY) {
       this.embedBuilder.addFields({ name: ' ', value: `**+ ${value} LP**` }).setColor("Green");
     }

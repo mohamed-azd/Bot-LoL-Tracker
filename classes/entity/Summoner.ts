@@ -38,7 +38,7 @@ class Summoner {
   }
 
   getTotalRank(): string {
-    return `${this.name} est **${this.tier} ${this.rank}** - ${this.lp} LP`;
+    return `${this.name} est **${this.tier} ${this.rank}** ${this.lp} LP`;
   }
 
   async loadData() {
