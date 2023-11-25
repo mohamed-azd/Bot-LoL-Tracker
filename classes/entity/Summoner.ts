@@ -3,7 +3,6 @@ import Tier from "../types/tier";
 
 class Summoner {
   private id: string;
-  private puuid: string;
   private name: string;
   private tier: Tier;
   private rank: string;
@@ -12,7 +11,6 @@ class Summoner {
 
   constructor(name: string) {
     this.id = "";
-    this.puuid = "";
     this.name = name;
     this.tier = Tier.UNRANK;
     this.rank = "";
@@ -36,16 +34,16 @@ class Summoner {
     return this.lp;
   }
 
-  getTotalRank() : string {
-    return `**${this.name}** est ${this.tier} ${this.rank} ${this.lp} LP`
+  getTotalRank(): string {
+    return `**${this.name}** est ${this.tier} ${this.rank} ${this.lp} LP`;
   }
 
   async loadData() {
     const data = (await this.riotService.getSummonerByName(this.name)).data;
     if (!data) return false;
     this.id = data.id;
-    this.puuid = data.puuid;
-    await this.loadRank();
+    if (!(await this.loadRank())) return false;
+    return true;
   }
 
   async loadRank() {
@@ -54,13 +52,14 @@ class Summoner {
     this.tier = this.strToTier(data.tier);
     this.rank = data.rank;
     this.lp = data.leaguePoints;
+    return true;
   }
 
   async check(): Promise<string | boolean> {
     const currentTier = this.tier;
     const currentRank = this.rank;
     const currentLp = this.lp;
-    await this.loadData();
+    if (!(await this.loadData())) return false;
     return this.compareTotalRank(currentTier, currentRank, currentLp);
   }
 
