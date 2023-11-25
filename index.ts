@@ -13,7 +13,7 @@ const client = new Client({
 
 const token = process.env.BOT_TOKEN;
 
-const summoners = [new Summoner("Waziio"), new Summoner("MY ZED GOT U"), new Summoner("Bald Chicken")];
+const summoners = [new Summoner("Waziio"), new Summoner("MY ZED GOT U"), new Summoner("Bald Chicken"), new Summoner("ElBrocolito")];
 
 client.on("ready", async () => {
   try {
