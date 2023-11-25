@@ -63,7 +63,6 @@ class Summoner {
     const currentRank = this.rank;
     const currentLp = this.lp;
     if (!(await this.loadData())) return false;
-    this.rank = "III"
     const msgBuilder = new MessageBuilder(this);
     const result = this.compareTotalRank(currentTier, currentRank, currentLp);
     if (!result) return false;
