@@ -1,5 +1,8 @@
+import { EmbedBuilder } from "discord.js";
 import RiotService from "../service/apiRiot";
+import GameResult from "../types/gameResult";
 import Tier from "../types/tier";
+import MessageBuilder from "./MessageBuilder";
 
 class Summoner {
   private id: string;
@@ -35,7 +38,7 @@ class Summoner {
   }
 
   getTotalRank(): string {
-    return `**${this.name}** est ${this.tier} ${this.rank} ${this.lp} LP`;
+    return `${this.name} est **${this.tier} ${this.rank}** - ${this.lp} LP`;
   }
 
   async loadData() {
@@ -55,39 +58,41 @@ class Summoner {
     return true;
   }
 
-  async check(): Promise<string | boolean> {
+  async check(): Promise<EmbedBuilder | boolean> {
     const currentTier = this.tier;
     const currentRank = this.rank;
     const currentLp = this.lp;
     if (!(await this.loadData())) return false;
-    return this.compareTotalRank(currentTier, currentRank, currentLp);
+    this.rank = "III"
+    const msgBuilder = new MessageBuilder(this);
+    const result = this.compareTotalRank(currentTier, currentRank, currentLp);
+    if (!result) return false;
+    return msgBuilder.build(result.result, result.type, result.value);
   }
 
-  compareTotalRank(currentTier: Tier, currentRank: string, currentLp: number): string | boolean {
-    const message = `\n${this.tier} ${this.rank} ${this.lp} LP`;
-
+  compareTotalRank(currentTier: Tier, currentRank: string, currentLp: number): Compare {
     // Same tier
     if (this.compareTier(currentTier, this.tier) === "same") {
       // Same rank
       if (this.compareRank(currentRank, this.rank) === "same") {
-        // Loss lp
-        if (this.lp > currentLp) return `${this.name} vient de perdre -${currentLp - this.lp} LP` + message;
         // Win lp
-        if (this.lp < currentLp) return `${this.name} vient de gagner +${currentLp - this.lp} LP` + message;
-        return false; // no change
+        if (this.lp > currentLp) return { result: GameResult.VICTORY, type: "LP", value: this.lp - currentLp };
+        // Loss lp
+        if (this.lp < currentLp) return { result: GameResult.DEFEAT, type: "LP", value: currentLp - this.lp };
+        return { result: GameResult.REMAKE, type: "", value: "" }; // no change
       } else if (this.compareRank(currentRank, this.rank) === "downgrade") {
         // Loss rank
-        return `${this.name} vient de descendre ${this.tier} ${this.rank}` + message;
+        return { result: GameResult.DEFEAT, type: "RANK", value: this.rank };
       } else {
         // Win rank
-        return `${this.name} vient de monter ${this.tier} ${this.rank}` + message;
+        return { result: GameResult.VICTORY, type: "RANK", value: this.rank };
       }
     } else if (this.compareTier(currentTier, this.tier) === "downgrade") {
       // Loss tier
-      return `${this.name} vient de descendre ${this.tier}` + message;
+      return { result: GameResult.DEFEAT, type: "TIER", value: this.tier };
     } else {
       // Win tier
-      return `${this.name} vient de monter ${this.tier}` + message;
+      return { result: GameResult.VICTORY, type: "TIER", value: this.tier };
     }
   }
 
@@ -162,5 +167,11 @@ class Summoner {
     }
   }
 }
+
+type Compare = {
+  result: GameResult;
+  type: string;
+  value: Tier | string | number;
+};
 
 export default Summoner;
