@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, TextChannel } from "discord.js";
+import { Client, GatewayIntentBits, TextChannel, EmbedBuilder } from "discord.js";
 import express, { Request, Response } from "express";
 import Summoner from "./classes/entity/Summoner";
 import dotenv from "dotenv";
@@ -29,8 +29,12 @@ client.on("ready", async () => {
 });
 
 client.on("messageCreate", (message) => {
+  const channel: TextChannel | any = client.channels.cache.get(channelId);
   if (message.content.toLowerCase().includes("samuel") && !message.author.bot) {
     message.reply("https://tenor.com/view/samuel-funny-dog-smile-happy-gif-17384183");
+  }
+
+  if (message.content.toLowerCase().includes("test")) {
   }
 });
 
@@ -40,9 +44,10 @@ async function track(summoners: Summoner[]) {
     console.log("Tracking ...");
     summoners.forEach(async (summoner) => {
       const changes = await summoner.check();
-      if (changes) channel.send(changes.toString());
+      console.log(changes);
+      if (changes) channel.send({ embeds: [changes] });
     });
-  }, 30000);
+  }, 10000);
 }
 
 const app = express();
