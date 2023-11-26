@@ -35,28 +35,32 @@ export default class MessageBuilder {
 
   buildLp(gameResult: GameResult, value: number): EmbedBuilder {
     if (gameResult === GameResult.DEFEAT) {
-      this.embedBuilder.addFields({ name: ' ', value: `**-${value} LP**` }).setColor("Red");
+      if (value === 0) {
+        this.embedBuilder.addFields({ name: " ", value: `Aïe aïe aïe, défaite à 0 LP pour ${this.summoner.getDiscordAt()}\nTu vas descendre ! :joy: :index_pointing_at_the_viewer: ` }).setColor("Red");
+      } else {
+        this.embedBuilder.addFields({ name: " ", value: `**-${value} LP**` }).setColor("Red");
+      }
     } else if (gameResult === GameResult.VICTORY) {
-      this.embedBuilder.addFields({ name: ' ', value: `**+ ${value} LP**` }).setColor("Green");
+      this.embedBuilder.addFields({ name: " ", value: `**+ ${value} LP**` }).setColor("Green");
     }
-    this.embedBuilder.setDescription(this.summoner.getTotalRank() );
+    this.embedBuilder.setDescription(this.summoner.getTotalRank());
     return this.embedBuilder;
   }
 
   buildRank(gameResult: GameResult, value: string): EmbedBuilder {
     if (gameResult === GameResult.DEFEAT) {
-      this.embedBuilder.setDescription(`${this.summoner.getName()} est descendu **${this.summoner.getTier()} ${value}**`).setColor("DarkRed");
+      this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est descendu **${this.summoner.getTier()} ${value}**`).setColor("DarkRed");
     } else if (gameResult === GameResult.VICTORY) {
-      this.embedBuilder.setDescription(`${this.summoner.getName()} est monté **${this.summoner.getTier()} ${value}**`).setColor("DarkGreen");
+      this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est monté **${this.summoner.getTier()} ${value}**`).setColor("DarkGreen");
     }
     return this.embedBuilder;
   }
 
   buildTier(gameResult: GameResult, value: Tier): EmbedBuilder {
     if (gameResult === GameResult.DEFEAT) {
-      this.embedBuilder.setDescription(`${this.summoner.getName()} est descendu **${value}**`).setColor("NotQuiteBlack");
+      this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est descendu **${value}**`).setColor("NotQuiteBlack");
     } else if (gameResult === GameResult.VICTORY) {
-      this.embedBuilder.setDescription(`${this.summoner.getName()} est monté **${value}**`).setColor("Gold");
+      this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est monté **${value}**`).setColor("Gold");
     }
     return this.embedBuilder;
   }

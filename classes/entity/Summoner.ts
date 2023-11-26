@@ -6,23 +6,33 @@ import MessageBuilder from "./MessageBuilder";
 
 class Summoner {
   private id: string;
+  private puuid: string;
   private name: string;
+  private discordAt: string;
   private tier: Tier;
   private rank: string;
   private lp: number;
+  private lastGameId: string;
   private riotService: RiotService;
 
-  constructor(name: string) {
+  constructor(name: string, discordAt: string) {
     this.id = "";
+    this.puuid = "";
     this.name = name;
+    this.discordAt = discordAt;
     this.tier = Tier.UNRANK;
     this.rank = "";
     this.lp = 0;
+    this.lastGameId = "";
     this.riotService = new RiotService();
   }
 
   getName(): string {
     return this.name;
+  }
+
+  getDiscordAt(): string {
+    return `<@${this.discordAt}>`;
   }
 
   getTier(): Tier {
@@ -38,14 +48,23 @@ class Summoner {
   }
 
   getTotalRank(): string {
-    return `${this.name} est **${this.tier} ${this.rank}** ${this.lp} LP`;
+    return `${this.getDiscordAt} est **${this.tier} ${this.rank}** ${this.lp} LP`;
   }
 
   async loadData() {
     const data = (await this.riotService.getSummonerByName(this.name)).data;
     if (!data) return false;
     this.id = data.id;
+    this.puuid = data.puuid;
+    if (!(await this.getLastGameId())) return false;
     if (!(await this.loadRank())) return false;
+    return true;
+  }
+
+  async getLastGameId() {
+    const data = (await this.riotService.getLastGameId(this.puuid)).data;
+    if (!data) return false;
+    this.lastGameId = data[0];
     return true;
   }
 
@@ -59,12 +78,14 @@ class Summoner {
   }
 
   async check(): Promise<EmbedBuilder | boolean> {
-    const currentTier = this.tier;
-    const currentRank = this.rank;
-    const currentLp = this.lp;
+    const oldTier = this.tier;
+    const oldRank = this.rank;
+    const oldLp = this.lp;
+    const oldLastGameId = this.lastGameId;
     if (!(await this.loadData())) return false;
+    if (oldLastGameId === this.lastGameId) return false;
     const msgBuilder = new MessageBuilder(this);
-    const result = this.compareTotalRank(currentTier, currentRank, currentLp);
+    const result = this.compareTotalRank(oldTier, oldRank, oldLp);
     if (!result) return false;
     return msgBuilder.build(result.result, result.type, result.value);
   }
@@ -78,7 +99,7 @@ class Summoner {
         if (this.lp > currentLp) return { result: GameResult.VICTORY, type: "LP", value: this.lp - currentLp };
         // Loss lp
         if (this.lp < currentLp) return { result: GameResult.DEFEAT, type: "LP", value: currentLp - this.lp };
-        return { result: GameResult.REMAKE, type: "", value: "" }; // no change
+        return { result: GameResult.DEFEAT, type: "LP", value: 0 }; // Loss at 0lp
       } else if (this.compareRank(currentRank, this.rank) === "downgrade") {
         // Loss rank
         return { result: GameResult.DEFEAT, type: "RANK", value: this.rank };
