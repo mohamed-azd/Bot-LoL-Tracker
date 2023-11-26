@@ -48,7 +48,7 @@ class Summoner {
   }
 
   getTotalRank(): string {
-    return `${this.getDiscordAt} est **${this.tier} ${this.rank}** ${this.lp} LP`;
+    return `${this.getDiscordAt()} est **${this.tier} ${this.rank}** ${this.lp} LP`;
   }
 
   async loadData() {
