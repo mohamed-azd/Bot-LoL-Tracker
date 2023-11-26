@@ -13,10 +13,11 @@ const client = new Client({
 
 const token = process.env.BOT_TOKEN;
 
-const summoners = [new Summoner("Waziio", "330746797842759681"),
-//  new Summoner("MY ZED GOT U", "410796897398423563"),
-//  new Summoner("Bald Chicken", "328484167119536128"),
-//  new Summoner("ElBrocolito", "571030411346706446")
+const summoners = [
+  new Summoner("LIwa2IKSBetnQxAEFSbzsh3C8ZTde1OQVUCnTiGvYHCrv7n4", "330746797842759681"),
+  new Summoner("9TZ578OHnzvp7MVcOpLy5jdlPRkA_LfcSCShqqUxhRQ3Emri", "410796897398423563"),
+  new Summoner("wQ6YjvwEKGjwzny59N0kyMC8CuCmieaJI4oYSO3cGoAZnOM", "328484167119536128"),
+  new Summoner("6csEdijM-R2gfQ0sWaym6t0Qu0g6_aINt33zB-lqvYyQaB068j3IJ6_joQ", "571030411346706446"),
 ];
 
 client.on("ready", async () => {
@@ -37,12 +38,6 @@ client.on("messageCreate", (message) => {
   if (message.content.toLowerCase().includes("samuel") && !message.author.bot) {
     message.reply("https://tenor.com/view/samuel-funny-dog-smile-happy-gif-17384183");
   }
-
-  if (message.content.toLowerCase().includes("test")) {
-    const userMention = "330746797842759681";
-    console.log(userMention)
-    channel.send(`Oh <@${userMention}>`)
-  }
 });
 
 async function track(summoners: Summoner[]) {
@@ -54,7 +49,7 @@ async function track(summoners: Summoner[]) {
       console.log(changes);
       if (changes) channel.send({ embeds: [changes] });
     });
-  }, 10000);
+  }, 60000);
 }
 
 const app = express();

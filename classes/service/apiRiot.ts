@@ -25,6 +25,14 @@ class RiotService {
     return await this.call(config);
   }
 
+  async getSummonerById(id: string): Promise<AxiosResponse> {
+    const config = {
+      url: this.getUrl(`/summoner/v4/summoners/${id}`),
+      method: "GET",
+    };
+    return await this.call(config);
+  }
+
   async getLastGameId(puuid: string) {
     const config = {
       url: this.getMatchesUrl(`/match/v5/matches/by-puuid/${puuid}/ids?type=ranked&start=0&count=1`),
