@@ -13,11 +13,7 @@ const client = new Client({
 
 const token = process.env.BOT_TOKEN;
 
-const summoners = [new Summoner("Waziio", "330746797842759681"),
-//  new Summoner("MY ZED GOT U", "410796897398423563"),
-//  new Summoner("Bald Chicken", "328484167119536128"),
-//  new Summoner("ElBrocolito", "571030411346706446")
-];
+const summoners = [new Summoner("Waziio", "330746797842759681"), new Summoner("MY ZED GOT U", "410796897398423563"), new Summoner("Bald Chicken", "328484167119536128"), new Summoner("ElBrocolito", "571030411346706446")];
 
 client.on("ready", async () => {
   try {
@@ -36,12 +32,6 @@ client.on("messageCreate", (message) => {
   const channel: TextChannel | any = client.channels.cache.get(channelId);
   if (message.content.toLowerCase().includes("samuel") && !message.author.bot) {
     message.reply("https://tenor.com/view/samuel-funny-dog-smile-happy-gif-17384183");
-  }
-
-  if (message.content.toLowerCase().includes("test")) {
-    const userMention = "330746797842759681";
-    console.log(userMention)
-    channel.send(`Oh <@${userMention}>`)
   }
 });
 
