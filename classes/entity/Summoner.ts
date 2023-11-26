@@ -15,10 +15,10 @@ class Summoner {
   private lastGameId: string;
   private riotService: RiotService;
 
-  constructor(name: string, discordAt: string) {
-    this.id = "";
+  constructor(id: string, discordAt: string) {
+    this.id = id;
     this.puuid = "";
-    this.name = name;
+    this.name = "";
     this.discordAt = discordAt;
     this.tier = Tier.UNRANK;
     this.rank = "";
@@ -27,12 +27,12 @@ class Summoner {
     this.riotService = new RiotService();
   }
 
-  getName(): string {
-    return this.name;
-  }
-
   getDiscordAt(): string {
     return `<@${this.discordAt}>`;
+  }
+
+  getName(): string {
+    return this.name;
   }
 
   getTier(): Tier {
@@ -52,10 +52,10 @@ class Summoner {
   }
 
   async loadData() {
-    const data = (await this.riotService.getSummonerByName(this.name)).data;
+    const data = (await this.riotService.getSummonerById(this.id)).data;
     if (!data) return false;
-    this.id = data.id;
     this.puuid = data.puuid;
+    this.name = data.name;
     if (!(await this.getLastGameId())) return false;
     if (!(await this.loadRank())) return false;
     return true;
