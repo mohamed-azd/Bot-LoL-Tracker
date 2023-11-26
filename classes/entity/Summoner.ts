@@ -38,7 +38,7 @@ class Summoner {
   }
 
   getTotalRank(): string {
-    return `${this.name} est **${this.tier} ${this.rank}** - ${this.lp} LP`;
+    return `${this.name} est **${this.tier} ${this.rank}** ${this.lp} LP`;
   }
 
   async loadData() {
@@ -63,7 +63,6 @@ class Summoner {
     const currentRank = this.rank;
     const currentLp = this.lp;
     if (!(await this.loadData())) return false;
-    this.rank = "III"
     const msgBuilder = new MessageBuilder(this);
     const result = this.compareTotalRank(currentTier, currentRank, currentLp);
     if (!result) return false;

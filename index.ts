@@ -13,7 +13,7 @@ const client = new Client({
 
 const token = process.env.BOT_TOKEN;
 
-const summoners = [new Summoner("Waziio"), new Summoner("MY ZED GOT U"), new Summoner("Bald Chicken")];
+const summoners = [new Summoner("Waziio"), new Summoner("MY ZED GOT U"), new Summoner("Bald Chicken"), new Summoner("ElBrocolito")];
 
 client.on("ready", async () => {
   try {
@@ -47,7 +47,7 @@ async function track(summoners: Summoner[]) {
       console.log(changes);
       if (changes) channel.send({ embeds: [changes] });
     });
-  }, 10000);
+  }, 30000);
 }
 
 const app = express();
