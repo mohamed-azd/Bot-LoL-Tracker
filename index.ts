@@ -13,7 +13,11 @@ const client = new Client({
 
 const token = process.env.BOT_TOKEN;
 
-const summoners = [new Summoner("Waziio"), new Summoner("MY ZED GOT U"), new Summoner("Bald Chicken"), new Summoner("ElBrocolito")];
+const summoners = [new Summoner("Waziio", "330746797842759681"),
+//  new Summoner("MY ZED GOT U", "410796897398423563"),
+//  new Summoner("Bald Chicken", "328484167119536128"),
+//  new Summoner("ElBrocolito", "571030411346706446")
+];
 
 client.on("ready", async () => {
   try {
@@ -35,6 +39,9 @@ client.on("messageCreate", (message) => {
   }
 
   if (message.content.toLowerCase().includes("test")) {
+    const userMention = "330746797842759681";
+    console.log(userMention)
+    channel.send(`Oh <@${userMention}>`)
   }
 });
 
@@ -47,7 +54,7 @@ async function track(summoners: Summoner[]) {
       console.log(changes);
       if (changes) channel.send({ embeds: [changes] });
     });
-  }, 30000);
+  }, 10000);
 }
 
 const app = express();
