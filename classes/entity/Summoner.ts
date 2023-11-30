@@ -114,7 +114,7 @@ class Summoner {
       });
     }
 
-    return { champion: champion, score: `${score.kills} / ${score.deaths} / ${score.assists}` };
+    return { champion: champion, score: `${score.kills}/${score.deaths}/${score.assists}` };
   }
 
   compareTotalRank(currentTier: Tier, currentRank: string, currentLp: number): Compare {
