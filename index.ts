@@ -39,6 +39,11 @@ client.on("messageCreate", (message) => {
   if (message.content.toLowerCase().includes("samuel") && !message.author.bot) {
     message.reply("https://tenor.com/view/samuel-funny-dog-smile-happy-gif-17384183");
   }
+
+  if (message.content.toLowerCase().startsWith("!key ") && message.author.id === "330746797842759681") {
+    const newKey = message.content.split(" ")[1].trim();
+    process.env.RIOT_API_KEY = newKey;
+  }
 });
 
 async function track(summoners: Summoner[]) {
