@@ -2,6 +2,7 @@ import { Client, GatewayIntentBits, TextChannel, EmbedBuilder } from "discord.js
 import express, { Request, Response } from "express";
 import Summoner from "./classes/entity/Summoner";
 import dotenv from "dotenv";
+import { AxiosError } from "axios";
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ const summoners = [
   new Summoner("6csEdijM-R2gfQ0sWaym6t0Qu0g6_aINt33zB-lqvYyQaB068j3IJ6_joQ", "571030411346706446"),
 ];
 
-client.on("ready", async () => {
+client.once("ready", async () => {
   try {
     console.log("Bot lancé");
     summoners.forEach(async (summoner) => {
@@ -33,10 +34,20 @@ client.on("ready", async () => {
   }
 });
 
-client.on("messageCreate", (message) => {
+client.on("messageCreate", async (message) => {
   const channel: TextChannel | any = client.channels.cache.get(channelId);
   if (message.content.toLowerCase().includes("samuel") && !message.author.bot) {
     message.reply("https://tenor.com/view/samuel-funny-dog-smile-happy-gif-17384183");
+  }
+
+  if (message.content.toLowerCase().startsWith("!key ") && message.author.id === "330746797842759681") {
+    const newKey = message.content.split(" ")[1].trim();
+    process.env.RIOT_API_KEY = newKey;
+    // checks that the key is updated
+    if(process.env.RIOT_API_KEY === newKey) {
+      message.reply("Clé Riot mise à jour !")
+      await client.destroy()
+    }
   }
 });
 
