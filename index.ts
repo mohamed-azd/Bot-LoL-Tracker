@@ -43,6 +43,10 @@ client.on("messageCreate", (message) => {
   if (message.content.toLowerCase().startsWith("!key ") && message.author.id === "330746797842759681") {
     const newKey = message.content.split(" ")[1].trim();
     process.env.RIOT_API_KEY = newKey;
+    // checks that the key is updated
+    if(process.env.RIOT_API_KEY === newKey) {
+      message.reply("Clé Riot mise à jour !")
+    }
   }
 });
 
