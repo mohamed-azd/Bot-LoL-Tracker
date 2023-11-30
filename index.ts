@@ -2,7 +2,6 @@ import { Client, GatewayIntentBits, TextChannel, EmbedBuilder } from "discord.js
 import express, { Request, Response } from "express";
 import Summoner from "./classes/entity/Summoner";
 import dotenv from "dotenv";
-import { AxiosError } from "axios";
 
 dotenv.config();
 

@@ -11,9 +11,11 @@ export default class MessageBuilder {
     this.summoner = summoner;
   }
 
-  build(gameResult: GameResult, type: string, value: any): EmbedBuilder | boolean {
+  build(gameResult: GameResult, type: string, value: any, champion: string, score: string): EmbedBuilder | boolean {
     if (gameResult === GameResult.REMAKE) return false;
     this.embedBuilder.setTitle(gameResult);
+    // Add champion and score
+    this.embedBuilder.addFields({ name: "Champion", value: champion }, { name: "Score", value: score });
     switch (type.toUpperCase()) {
       case "LP": {
         return this.buildLp(gameResult, value);

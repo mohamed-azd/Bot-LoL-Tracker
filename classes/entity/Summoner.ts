@@ -87,7 +87,34 @@ class Summoner {
     const msgBuilder = new MessageBuilder(this);
     const result = this.compareTotalRank(oldTier, oldRank, oldLp);
     if (!result) return false;
-    return msgBuilder.build(result.result, result.type, result.value);
+    const { champion, score } = await this.getLastMatch(this.lastGameId);
+    if (!champion) return false;
+    return msgBuilder.build(result.result, result.type, result.value, champion, score);
+  }
+
+  async getLastMatch(matchId: string): Promise<{ champion: string; score: string }> {
+    const matchInfos: any = await this.riotService.getGameInfos(matchId);
+    const players: Array<any> = matchInfos.data.info.participants;
+    let score = {
+      kills: "",
+      deaths: "",
+      assists: "",
+    };
+    let champion = "";
+
+    if (matchInfos) {
+      // Find summoner
+      players.forEach((player) => {
+        if (player.puuid === this.puuid) {
+          score.kills = player.kills;
+          score.deaths = player.deaths;
+          score.assists = player.assists;
+          champion = player.championName;
+        }
+      });
+    }
+
+    return { champion: champion, score: `${score.kills}/${score.deaths}/${score.assists}` };
   }
 
   compareTotalRank(currentTier: Tier, currentRank: string, currentLp: number): Compare {
