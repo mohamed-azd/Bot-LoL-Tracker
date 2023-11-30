@@ -34,7 +34,7 @@ client.once("ready", async () => {
   }
 });
 
-client.on("messageCreate", (message) => {
+client.on("messageCreate", async (message) => {
   const channel: TextChannel | any = client.channels.cache.get(channelId);
   if (message.content.toLowerCase().includes("samuel") && !message.author.bot) {
     message.reply("https://tenor.com/view/samuel-funny-dog-smile-happy-gif-17384183");
@@ -46,6 +46,7 @@ client.on("messageCreate", (message) => {
     // checks that the key is updated
     if(process.env.RIOT_API_KEY === newKey) {
       message.reply("Clé Riot mise à jour !")
+      await client.destroy()
     }
   }
 });
