@@ -21,21 +21,16 @@ const summoners = [
   new Summoner("6csEdijM-R2gfQ0sWaym6t0Qu0g6_aINt33zB-lqvYyQaB068j3IJ6_joQ", "571030411346706446"),
 ];
 
-let error = 0;
-
-client.on("ready", async () => {
+client.once("ready", async () => {
   try {
-    if (!error) {
-      console.log("Bot lancé");
-      summoners.forEach(async (summoner) => {
-        await summoner.loadData();
-        console.log(`Summoner ${summoner.getName()} initialisé !`);
-      });
-      await track(summoners);
-    }
+    console.log("Bot lancé");
+    summoners.forEach(async (summoner) => {
+      await summoner.loadData();
+      console.log(`Summoner ${summoner.getName()} initialisé !`);
+    });
+    await track(summoners);
   } catch (err: any) {
     console.log(err);
-    error = 1;
   }
 });
 
