@@ -9,8 +9,9 @@ class RiotService {
     return this.baseUrl + route + `?api_key=${this.apiKey}`;
   }
 
-  getMatchesUrl(route = "") {
-    return this.baseUrlMatches + route + `&api_key=${this.apiKey}`;
+  getMatchesUrl(route = "", firstArg = true) {
+    const prefix = firstArg ? "?" : "&"
+    return this.baseUrlMatches + route + `${prefix}api_key=${this.apiKey}`;
   }
 
   async call(config: AxiosRequestConfig): Promise<AxiosResponse> {
@@ -35,7 +36,15 @@ class RiotService {
 
   async getLastGameId(puuid: string) {
     const config = {
-      url: this.getMatchesUrl(`/match/v5/matches/by-puuid/${puuid}/ids?type=ranked&start=0&count=1`),
+      url: this.getMatchesUrl(`/match/v5/matches/by-puuid/${puuid}/ids?type=ranked&start=0&count=1`, false),
+      method: "GET",
+    };
+    return await this.call(config);
+  }
+
+  async getGameInfos(matchId: string) {
+    const config = {
+      url: this.getMatchesUrl(`/match/v5/matches/${matchId}`),
       method: "GET",
     };
     return await this.call(config);
