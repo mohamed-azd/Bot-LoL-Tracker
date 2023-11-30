@@ -16,6 +16,8 @@ export default class MessageBuilder {
     this.embedBuilder.setTitle(gameResult);
     // Add champion and score
     this.embedBuilder.addFields({ name: "Champion", value: champion }, { name: "Score", value: score });
+    // Add champion image
+    this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/${champion}.png`)
     switch (type.toUpperCase()) {
       case "LP": {
         return this.buildLp(gameResult, value);
