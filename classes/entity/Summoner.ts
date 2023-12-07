@@ -86,7 +86,7 @@ class Summoner {
     if (oldLastGameId === this.lastGameId) return false;
     const msgBuilder = new MessageBuilder(this);
     const result = this.compareTotalRank(oldTier, oldRank, oldLp);
-    if (!result) return false;
+    if (result.result === GameResult.REMAKE) return false;
     const { champion, score } = await this.getLastMatch(this.lastGameId);
     if (!champion) return false;
     return msgBuilder.build(result.result, result.type, result.value, champion, score);
@@ -126,7 +126,10 @@ class Summoner {
         if (this.lp > currentLp) return { result: GameResult.VICTORY, type: "LP", value: this.lp - currentLp };
         // Loss lp
         if (this.lp < currentLp) return { result: GameResult.DEFEAT, type: "LP", value: currentLp - this.lp };
-        return { result: GameResult.DEFEAT, type: "LP", value: 0 }; // Loss at 0lp
+        // Loss at 0lp
+        if (this.lp == 0 && currentLp == 0) return { result: GameResult.DEFEAT, type: "LP", value: 0 }; 
+        // Game remake
+        return { result: GameResult.REMAKE, type: "", value: 0 }; ;
       } else if (this.compareRank(currentRank, this.rank) === "downgrade") {
         // Loss rank
         return { result: GameResult.DEFEAT, type: "RANK", value: this.rank };
