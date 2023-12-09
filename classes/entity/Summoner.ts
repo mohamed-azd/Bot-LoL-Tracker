@@ -70,7 +70,8 @@ class Summoner {
 
   async loadRank() {
     const data = (await this.riotService.getRank(this.id)).data[0];
-    if (!data) return false;
+    if (!data || data?.queueType !== "CLASSIC") return false;
+    console.log(data);
     this.tier = this.strToTier(data.tier);
     this.rank = data.rank;
     this.lp = data.leaguePoints;
@@ -127,9 +128,9 @@ class Summoner {
         // Loss lp
         if (this.lp < currentLp) return { result: GameResult.DEFEAT, type: "LP", value: currentLp - this.lp };
         // Loss at 0lp
-        if (this.lp == 0 && currentLp == 0) return { result: GameResult.DEFEAT, type: "LP", value: 0 }; 
+        if (this.lp == 0 && currentLp == 0) return { result: GameResult.DEFEAT, type: "LP", value: 0 };
         // Game remake
-        return { result: GameResult.REMAKE, type: "", value: 0 }; ;
+        return { result: GameResult.REMAKE, type: "", value: 0 };
       } else if (this.compareRank(currentRank, this.rank) === "downgrade") {
         // Loss rank
         return { result: GameResult.DEFEAT, type: "RANK", value: this.rank };
