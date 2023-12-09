@@ -36,7 +36,7 @@ class RiotService {
 
   async getLastGameId(puuid: string) {
     const config = {
-      url: this.getMatchesUrl(`/match/v5/matches/by-puuid/${puuid}/ids?type=ranked&start=0&count=1`, false),
+      url: this.getMatchesUrl(`/match/v5/matches/by-puuid/${puuid}/ids?queue=420&type=ranked&start=0&count=1`, false),
       method: "GET",
     };
     return await this.call(config);
