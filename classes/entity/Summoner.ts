@@ -70,8 +70,7 @@ class Summoner {
 
   async loadRank() {
     const data = (await this.riotService.getRank(this.id)).data[0];
-    if (!data || data?.queueType !== "CLASSIC") return false;
-    console.log(data);
+    if (!data || data?.queueType !== "RANKED_SOLO_5x5") return false;
     this.tier = this.strToTier(data.tier);
     this.rank = data.rank;
     this.lp = data.leaguePoints;
