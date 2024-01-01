@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import RiotService from "../service/apiRiot";
+import RiotService from "../services/apiRiot";
 import GameResult from "../types/gameResult";
 import Tier from "../types/tier";
 import MessageBuilder from "./MessageBuilder";

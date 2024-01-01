@@ -1,16 +1,14 @@
-import { Client, GatewayIntentBits, TextChannel, EmbedBuilder } from "discord.js";
+import { Client, GatewayIntentBits, TextChannel } from "discord.js";
 import express, { Request, Response } from "express";
-import Summoner from "./classes/entity/Summoner";
+import Summoner from "./src/classes/Summoner";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const channelId: string | any = process.env.CHANNEL_ID;
-
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates],
 });
-
 const token = process.env.BOT_TOKEN;
 
 const summoners = [
