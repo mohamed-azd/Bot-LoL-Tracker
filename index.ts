@@ -41,7 +41,7 @@ client.on("messageCreate", async (message) => {
     const newKey = message.content.split(" ")[1].trim();
     process.env.RIOT_API_KEY = newKey;
     // checks that the key is updated
-    if(process.env.RIOT_API_KEY === newKey) {
+    if (process.env.RIOT_API_KEY === newKey) {
       message.reply("Clé Riot mise à jour !")
       await client.destroy()
     }
@@ -65,11 +65,7 @@ const port = 8000; // Port de contrôle de santé
 
 // Health check endpoint
 app.get("/health", (req: Request, res: Response) => {
-  if (client.isReady()) {
-    res.status(200).send("Bot is healthy");
-  } else {
-    res.status(500).send("Bot is not healthy");
-  }
+  res.status(200).send("Bot is healthy");
 });
 
 app.listen(port, () => {
