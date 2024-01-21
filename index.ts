@@ -12,10 +12,11 @@ const client = new Client({
 const token = process.env.BOT_TOKEN;
 
 const summoners = [
-  new Summoner("Thv9OHEhk7foYhwnwIlZSKMs-TVXOOliR-XIncJ3rQkUOuX7", "330746797842759681"),
-  new Summoner("nOOKlG4MEE6W-W2GM8CHl0Ruv9SVEKiUTPfnzn32lm1lLGZr", "410796897398423563"),
-  // new Summoner("pjc66RDlPA8f0IpLsJVuxNvOYS9276AWba92sHJBU828TgU", "328484167119536128"),
-  new Summoner("DFST_qORn2PSAjSPHHi35-zxqfiGaDnjVw4JJadiT8goEAmIJfeiv2Nc_g", "571030411346706446"),
+  new Summoner("Thv9OHEhk7foYhwnwIlZSKMs-TVXOOliR-XIncJ3rQkUOuX7", "330746797842759681"), // me
+  new Summoner("nOOKlG4MEE6W-W2GM8CHl0Ruv9SVEKiUTPfnzn32lm1lLGZr", "410796897398423563"), // ewen
+  // new Summoner("pjc66RDlPA8f0IpLsJVuxNvOYS9276AWba92sHJBU828TgU", "328484167119536128"), // raph
+  new Summoner("DFST_qORn2PSAjSPHHi35-zxqfiGaDnjVw4JJadiT8goEAmIJfeiv2Nc_g", "571030411346706446"), // julien
+  new Summoner("wZA23fjCfVtAzvwtJVWMhvFWzJn3vDCsdnNjtpY2OInOVUjBdknabDg9", "1041340632272228382"), // eliott
 ];
 
 client.once("ready", async () => {
