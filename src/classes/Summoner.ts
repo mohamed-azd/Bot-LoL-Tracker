@@ -89,7 +89,7 @@ class Summoner {
     if (result.result === GameResult.REMAKE) return false;
     const { champion, score } = await this.getLastMatch(this.lastGameId);
     if (!champion) return false;
-    return msgBuilder.build(result.result, result.type, result.value, champion, score);
+    return msgBuilder.build(result.result, result.type, result.value, this.name, champion, score);
   }
 
   async getLastMatch(matchId: string): Promise<{ champion: string; score: string }> {
