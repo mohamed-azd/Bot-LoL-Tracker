@@ -53,6 +53,7 @@ class Summoner {
 
   async loadData() {
     const data = (await this.riotService.getSummonerById(this.id)).data;
+    console.log(data);
     if (!data) return false;
     this.puuid = data.puuid;
     this.name = data.name;

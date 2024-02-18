@@ -17,7 +17,7 @@ const summoners = [
   // new Summoner("pjc66RDlPA8f0IpLsJVuxNvOYS9276AWba92sHJBU828TgU", "328484167119536128"), // raph
   new Summoner("DFST_qORn2PSAjSPHHi35-zxqfiGaDnjVw4JJadiT8goEAmIJfeiv2Nc_g", "571030411346706446"), // julien
   new Summoner("l_0JwNv-TGcQGwSAvLZLEnyKFs7GRvw_V_Dz942jpKZJqWqi", "1041340632272228382"), // eliott
-  new Summoner("gEa4B514kj0TUoEqfmiHa3apxCJ9qCsw3tJPWxcJ_tXfjQPUqcBHbfKTrA", "548117430702964769"), // arthur
+  new Summoner("LfijrIMWDlhbwAM7lNU-fcW_uOzZGm0_8JDNCABchHKsiJ9Dd7sd6ileNA", "548117430702964769"), // arthur
 ];
 
 client.once("ready", async () => {
@@ -59,7 +59,7 @@ async function track(summoners: Summoner[]) {
       console.log(changes);
       if (changes) channel.send({ embeds: [changes] });
     });
-  }, 120000);
+  }, 180000);
 }
 
 const app = express();
