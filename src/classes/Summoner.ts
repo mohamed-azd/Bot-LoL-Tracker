@@ -53,7 +53,6 @@ class Summoner {
 
   async loadData() {
     const data = (await this.riotService.getSummonerById(this.id)).data;
-    console.log(data);
     if (!data) return false;
     this.puuid = data.puuid;
     this.name = data.name;
@@ -71,6 +70,7 @@ class Summoner {
 
   async loadRank() {
     const data = (await this.riotService.getRank(this.id)).data[0];
+    console.log(data)
     if (!data || data?.queueType !== "RANKED_SOLO_5x5") return false;
     this.tier = this.strToTier(data.tier);
     this.rank = data.rank;
