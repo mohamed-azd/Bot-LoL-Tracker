@@ -141,9 +141,12 @@ class Summoner {
     } else if (this.compareTier(currentTier, this.tier) === "downgrade") {
       // Loss tier
       return { result: GameResult.DEFEAT, type: "TIER", value: this.tier };
-    } else {
+    } else if (this.compareTier(currentTier, this.tier) === "upgrade") {
       // Win tier
       return { result: GameResult.VICTORY, type: "TIER", value: this.tier };
+    } else {
+      // error
+      return { result: GameResult.REMAKE, type: "", value: 0 }
     }
   }
 
