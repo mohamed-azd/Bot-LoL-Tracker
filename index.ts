@@ -58,6 +58,8 @@ async function track(summoners: Summoner[]) {
       const changes = await summoner.check();
       console.log(changes);
       if (changes) channel.send({ embeds: [changes] });
+      // Delay between summoners
+      await new Promise(resolve => setTimeout(resolve, 1500));
     });
   }, 180000);
 }
