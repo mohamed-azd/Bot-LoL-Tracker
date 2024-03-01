@@ -13,7 +13,7 @@ const token = process.env.BOT_TOKEN;
 
 const summoners = [
   new Summoner("Thv9OHEhk7foYhwnwIlZSKMs-TVXOOliR-XIncJ3rQkUOuX7", "330746797842759681"), // me
-  new Summoner("nOOKlG4MEE6W-W2GM8CHl0Ruv9SVEKiUTPfnzn32lm1lLGZr", "410796897398423563"), // ewen
+  // new Summoner("nOOKlG4MEE6W-W2GM8CHl0Ruv9SVEKiUTPfnzn32lm1lLGZr", "410796897398423563"), // ewen
   new Summoner("pjc66RDlPA8f0IpLsJVuxNvOYS9276AWba92sHJBU828TgU", "328484167119536128"), // raph
   new Summoner("DFST_qORn2PSAjSPHHi35-zxqfiGaDnjVw4JJadiT8goEAmIJfeiv2Nc_g", "571030411346706446"), // julien
   new Summoner("l_0JwNv-TGcQGwSAvLZLEnyKFs7GRvw_V_Dz942jpKZJqWqi", "1041340632272228382"), // eliott
