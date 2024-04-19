@@ -12,12 +12,12 @@ const client = new Client({
 const token = process.env.BOT_TOKEN;
 
 const summoners = [
-  new Summoner("Thv9OHEhk7foYhwnwIlZSKMs-TVXOOliR-XIncJ3rQkUOuX7", "330746797842759681"), // me
-  // new Summoner("nOOKlG4MEE6W-W2GM8CHl0Ruv9SVEKiUTPfnzn32lm1lLGZr", "410796897398423563"), // ewen
-  new Summoner("pjc66RDlPA8f0IpLsJVuxNvOYS9276AWba92sHJBU828TgU", "328484167119536128"), // raph
-  new Summoner("DFST_qORn2PSAjSPHHi35-zxqfiGaDnjVw4JJadiT8goEAmIJfeiv2Nc_g", "571030411346706446"), // julien
-  new Summoner("l_0JwNv-TGcQGwSAvLZLEnyKFs7GRvw_V_Dz942jpKZJqWqi", "1041340632272228382"), // eliott
-  new Summoner("LfijrIMWDlhbwAM7lNU-fcW_uOzZGm0_8JDNCABchHKsiJ9Dd7sd6ileNA", "548117430702964769"), // arthur
+  new Summoner("Mohamed", "Thv9OHEhk7foYhwnwIlZSKMs-TVXOOliR-XIncJ3rQkUOuX7", "330746797842759681"), // me
+  new Summoner("Ewen", "91Mn1ptNSN9-cpBC1iXIAzTavMXtClyGLRr2G5fJe7HlBsnfjYdE_csi", "410796897398423563"), // ewen
+  new Summoner("Raphaël", "pjc66RDlPA8f0IpLsJVuxNvOYS9276AWba92sHJBU828TgU", "328484167119536128"), // raph
+  new Summoner("Julien", "DFST_qORn2PSAjSPHHi35-zxqfiGaDnjVw4JJadiT8goEAmIJfeiv2Nc_g", "571030411346706446"), // julien
+  new Summoner("Eliott", "l_0JwNv-TGcQGwSAvLZLEnyKFs7GRvw_V_Dz942jpKZJqWqi", "1041340632272228382"), // eliott
+  new Summoner("Arthur", "LfijrIMWDlhbwAM7lNU-fcW_uOzZGm0_8JDNCABchHKsiJ9Dd7sd6ileNA", "548117430702964769"), // arthur
 ];
 
 client.once("ready", async () => {
@@ -33,7 +33,7 @@ client.once("ready", async () => {
   }
 });
 
-client.on("messageCreate", async (message) => {
+client.on("messageCreate", async (message: any) => {
   const channel: TextChannel | any = client.channels.cache.get(channelId);
   if (message.content.toLowerCase().includes("samuel") && !message.author.bot) {
     message.reply("https://tenor.com/view/samuel-funny-dog-smile-happy-gif-17384183");

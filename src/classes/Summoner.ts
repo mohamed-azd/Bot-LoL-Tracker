@@ -15,10 +15,10 @@ class Summoner {
   private lastGameId: string;
   private riotService: RiotService;
 
-  constructor(id: string, discordAt: string) {
+  constructor(name: string, id: string, discordAt: string) {
     this.id = id;
     this.puuid = "";
-    this.name = "";
+    this.name = name;
     this.discordAt = discordAt;
     this.tier = Tier.UNRANK;
     this.rank = "";
@@ -55,7 +55,6 @@ class Summoner {
     const data = (await this.riotService.getSummonerById(this.id)).data;
     if (!data) return false;
     this.puuid = data.puuid;
-    this.name = data.name;
     if (!(await this.getLastGameId())) return false;
     if (!(await this.loadRank())) return false;
     return true;
@@ -92,7 +91,7 @@ class Summoner {
     if (result.result === GameResult.REMAKE) return false;
     const { champion, score } = await this.getLastMatch(this.lastGameId);
     if (!champion) return false;
-    return msgBuilder.build(result.result, result.type, result.value, this.name, champion, score);
+    return msgBuilder.build(result.result, result.type, result.value, champion, score);
   }
 
   async getLastMatch(matchId: string): Promise<{ champion: string; score: string }> {
