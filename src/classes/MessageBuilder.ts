@@ -72,10 +72,9 @@ export default class MessageBuilder {
     return this.embedBuilder;
   }
 
-  formatGameDuration(durationMs: number) {
-    const totalSeconds = Math.floor(durationMs / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
+  formatGameDuration(duration: number) {
+    const minutes = Math.floor(duration / 60);
+    const seconds = duration % 60;
 
     const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
 
