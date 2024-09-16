@@ -11,11 +11,14 @@ export default class MessageBuilder {
     this.summoner = summoner;
   }
 
-  build(gameResult: GameResult, type: string, value: any, champion: string, score: string): EmbedBuilder | boolean {
+  build(gameResult: GameResult, type: string, value: any, champion: string, score: string, duration: number): EmbedBuilder | boolean {
     if (gameResult === GameResult.REMAKE) return false;
+
+    const gameDuration = this.formatGameDuration(duration)
+
     this.embedBuilder.setTitle(gameResult);
-    // Add champion and score
-    this.embedBuilder.addFields({ name: "Champion", value: champion }, { name: "Score", value: score });
+    // Add champion, score and game duration
+    this.embedBuilder.addFields({ name: "Champion", value: champion }, { name: "Score", value: score }, { name: 'Durée', value: gameDuration });
     // Add champion image
     this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/${champion}.png`)
     switch (type.toUpperCase()) {
@@ -67,5 +70,15 @@ export default class MessageBuilder {
       this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est monté **${value}**`).setColor("Gold");
     }
     return this.embedBuilder;
+  }
+
+  formatGameDuration(gameDuration: number) {
+    const date = new Date(gameDuration);
+    const minutes = date.getUTCMinutes();
+    const seconds = date.getUTCSeconds();
+
+    const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+
+    return `${minutes}:${formattedSeconds}`;
   }
 }

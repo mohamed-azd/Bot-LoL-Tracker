@@ -89,21 +89,23 @@ class Summoner {
     const msgBuilder = new MessageBuilder(this);
     const result = this.compareTotalRank(oldTier, oldRank, oldLp);
     if (result.result === GameResult.REMAKE) return false;
-    const { champion, score } = await this.getLastMatch(this.lastGameId);
+    const { champion, score, duration } = await this.getLastMatch(this.lastGameId);
     if (!champion) return false;
-    return msgBuilder.build(result.result, result.type, result.value, champion, score);
+    return msgBuilder.build(result.result, result.type, result.value, champion, score, duration);
   }
 
-  async getLastMatch(matchId: string): Promise<{ champion: string; score: string }> {
+  async getLastMatch(matchId: string): Promise<{ champion: string; score: string, duration: number }> {
     const matchInfos: any = await this.riotService.getGameInfos(matchId);
     const players: Array<any> = matchInfos.data.info.participants;
+    const duration = matchInfos.data.info.gameDuration;
+
     let score = {
       kills: "",
       deaths: "",
       assists: "",
     };
     let champion = "";
-
+    
     if (matchInfos) {
       // Find summoner
       players.forEach((player) => {
@@ -114,9 +116,10 @@ class Summoner {
           champion = player.championName;
         }
       });
+      
     }
 
-    return { champion: champion, score: `${score.kills} / ${score.deaths} / ${score.assists}` };
+    return { champion: champion, score: `${score.kills} / ${score.deaths} / ${score.assists}`, duration };
   }
 
   compareTotalRank(currentTier: Tier, currentRank: string, currentLp: number): Compare {
