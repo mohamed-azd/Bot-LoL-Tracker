@@ -27,7 +27,7 @@ export default class MessageBuilder {
     );
 
     // Add champion image
-    this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/${champion}.png`)
+    this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/14.18.1/img/champion/${champion}.png`)
     switch (type.toUpperCase()) {
       case "LP": {
         return this.buildLp(gameResult, value);
