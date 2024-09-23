@@ -89,12 +89,16 @@ class Summoner {
     const msgBuilder = new MessageBuilder(this);
     const result = this.compareTotalRank(oldTier, oldRank, oldLp);
     if (result.result === GameResult.REMAKE) return false;
-    const { champion, score, duration } = await this.getLastMatch(this.lastGameId);
+    const { champion, score, duration, playerName, playerTag } = await this.getLastMatch(this.lastGameId);
     if (!champion) return false;
-    return msgBuilder.build(result.result, result.type, result.value, champion, score, duration);
+
+    // Get the OPGG link
+    const opggLink = this.getOpggLink(playerName, playerTag)
+
+    return msgBuilder.build(result.result, result.type, result.value, champion, score, duration, opggLink);
   }
 
-  async getLastMatch(matchId: string): Promise<{ champion: string; score: string, duration: number }> {
+  async getLastMatch(matchId: string): Promise<{ champion: string; score: string, duration: number, playerName: string, playerTag: string }> {
     const matchInfos: any = await this.riotService.getGameInfos(matchId);
     const players: Array<any> = matchInfos.data.info.participants;
     const duration = matchInfos.data.info.gameDuration;
@@ -105,6 +109,8 @@ class Summoner {
       assists: "",
     };
     let champion = "";
+    let playerName = "";
+    let playerTag = "";
     
     if (matchInfos) {
       // Find summoner
@@ -114,12 +120,19 @@ class Summoner {
           score.deaths = player.deaths;
           score.assists = player.assists;
           champion = player.championName;
+          playerName = player.riotIdGameName
+          playerTag = player.riotIdTagline
         }
       });
       
     }
 
-    return { champion: champion, score: `${score.kills} / ${score.deaths} / ${score.assists}`, duration };
+    return { champion: champion, score: `${score.kills} / ${score.deaths} / ${score.assists}`, duration, playerName, playerTag };
+  }
+
+  getOpggLink(playerName: string, playerTag: string) : string {
+    playerName = playerName.replace(/\s/g, '%20')
+    return `https://www.op.gg/summoners/euw/${playerName}-${playerTag}`
   }
 
   compareTotalRank(currentTier: Tier, currentRank: string, currentLp: number): Compare {

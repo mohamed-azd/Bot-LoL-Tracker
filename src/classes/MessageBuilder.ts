@@ -11,14 +11,21 @@ export default class MessageBuilder {
     this.summoner = summoner;
   }
 
-  build(gameResult: GameResult, type: string, value: any, champion: string, score: string, duration: number): EmbedBuilder | boolean {
+  build(gameResult: GameResult, type: string, value: any, champion: string, score: string, duration: number, opggLink: string): EmbedBuilder | boolean {
     if (gameResult === GameResult.REMAKE) return false;
 
     const gameDuration = this.formatGameDuration(duration)
 
     this.embedBuilder.setTitle(gameResult);
+    
     // Add champion, score and game duration
-    this.embedBuilder.addFields({ name: "Champion", value: champion }, { name: "Score", value: score }, { name: 'Durée', value: gameDuration });
+    this.embedBuilder.addFields(
+      { name: "Champion", value: champion },
+      { name: "Score", value: score },
+      { name: 'Durée', value: gameDuration },
+      { name: 'Détails', value: `[OPGG](${opggLink})` }
+    );
+
     // Add champion image
     this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/11.11.1/img/champion/${champion}.png`)
     switch (type.toUpperCase()) {
