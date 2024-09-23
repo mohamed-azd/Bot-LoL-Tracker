@@ -23,7 +23,7 @@ export default class MessageBuilder {
       { name: "Champion", value: champion },
       { name: "Score", value: score },
       { name: 'Durée', value: gameDuration },
-      { name: 'Détails', value: `[OPGG](${opggLink})` }
+      { name: 'Détails', value: `[**OPGG**](${opggLink})` }
     );
 
     // Add champion image
