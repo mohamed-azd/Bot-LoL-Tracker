@@ -1,90 +1,103 @@
-import { EmbedBuilder } from "discord.js";
-import GameResult from "../types/gameResult";
-import Summoner from "./Summoner";
-import Tier from "../types/tier";
+import { EmbedBuilder } from 'discord.js';
+import GameResult from '../types/gameResult';
+import Summoner from './Summoner';
+import Tier from '../types/tier';
 
 export default class MessageBuilder {
-  private summoner: Summoner;
-  private embedBuilder: EmbedBuilder = new EmbedBuilder();
+	private summoner: Summoner;
+	private embedBuilder: EmbedBuilder = new EmbedBuilder();
 
-  constructor(summoner: Summoner) {
-    this.summoner = summoner;
-  }
+	constructor(summoner: Summoner) {
+		this.summoner = summoner;
+	}
 
-  build(gameResult: GameResult, type: string, value: any, champion: string, score: string, duration: number, opggLink: string): EmbedBuilder | boolean {
-    if (gameResult === GameResult.REMAKE) return false;
+	build(
+		gameResult: GameResult,
+		type: string,
+		value: any,
+		champion: string,
+		score: string,
+		duration: number,
+		opggLink: string
+	): EmbedBuilder | boolean {
+		if (gameResult === GameResult.REMAKE) return false;
 
-    const gameDuration = this.formatGameDuration(duration)
+		const gameDuration = this.formatGameDuration(duration);
 
-    this.embedBuilder.setTitle(gameResult);
-    
-    // Add champion, score and game duration
-    this.embedBuilder.addFields(
-      { name: "Champion", value: champion },
-      { name: "Score", value: score },
-      { name: 'Durée', value: gameDuration },
-      { name: 'Détails', value: `[**OPGG**](${opggLink})` }
-    );
+		this.embedBuilder.setTitle(gameResult);
 
-    // Add champion image
-    this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/14.18.1/img/champion/${champion}.png`)
-    switch (type.toUpperCase()) {
-      case "LP": {
-        return this.buildLp(gameResult, value);
-      }
+		// Add champion, score and game duration
+		this.embedBuilder.addFields(
+			{ name: 'Champion', value: champion },
+			{ name: 'Score', value: score },
+			{ name: 'Durée', value: gameDuration },
+			{ name: 'Détails', value: `[**OPGG**](${opggLink})` }
+		);
 
-      case "RANK": {
-        return this.buildRank(gameResult, value);
-      }
+		// Add champion image
+		this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/14.24.1/img/champion/${champion}.png`);
+		switch (type.toUpperCase()) {
+			case 'LP': {
+				return this.buildLp(gameResult, value);
+			}
 
-      case "TIER": {
-        return this.buildTier(gameResult, value);
-      }
+			case 'RANK': {
+				return this.buildRank(gameResult, value);
+			}
 
-      default: {
-        return false;
-      }
-    }
-  }
+			case 'TIER': {
+				return this.buildTier(gameResult, value);
+			}
 
-  buildLp(gameResult: GameResult, value: number): EmbedBuilder {
-    if (gameResult === GameResult.DEFEAT) {
-      if (value === 0) {
-        this.embedBuilder.addFields({ name: " ", value: `Aïe aïe aïe, défaite à 0 LP pour ${this.summoner.getDiscordAt()}\nTu vas descendre ! :joy: :index_pointing_at_the_viewer: ` }).setColor("Red");
-      } else {
-        this.embedBuilder.addFields({ name: " ", value: `**-${value} LP**` }).setColor("Red");
-      }
-    } else if (gameResult === GameResult.VICTORY) {
-      this.embedBuilder.addFields({ name: " ", value: `**+ ${value} LP**` }).setColor("Green");
-    }
-    this.embedBuilder.setDescription(this.summoner.getTotalRank());
-    return this.embedBuilder;
-  }
+			default: {
+				return false;
+			}
+		}
+	}
 
-  buildRank(gameResult: GameResult, value: string): EmbedBuilder {
-    if (gameResult === GameResult.DEFEAT) {
-      this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est descendu **${this.summoner.getTier()} ${value}**`).setColor("DarkRed");
-    } else if (gameResult === GameResult.VICTORY) {
-      this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est monté **${this.summoner.getTier()} ${value}**`).setColor("DarkGreen");
-    }
-    return this.embedBuilder;
-  }
+	buildLp(gameResult: GameResult, value: number): EmbedBuilder {
+		if (gameResult === GameResult.DEFEAT) {
+			if (value === 0) {
+				this.embedBuilder
+					.addFields({
+						name: ' ',
+						value: `Aïe aïe aïe, défaite à 0 LP pour ${this.summoner.getDiscordAt()}\nTu vas descendre ! :joy: :index_pointing_at_the_viewer: `,
+					})
+					.setColor('Red');
+			} else {
+				this.embedBuilder.addFields({ name: ' ', value: `**-${value} LP**` }).setColor('Red');
+			}
+		} else if (gameResult === GameResult.VICTORY) {
+			this.embedBuilder.addFields({ name: ' ', value: `**+ ${value} LP**` }).setColor('Green');
+		}
+		this.embedBuilder.setDescription(this.summoner.getTotalRank());
+		return this.embedBuilder;
+	}
 
-  buildTier(gameResult: GameResult, value: Tier): EmbedBuilder {
-    if (gameResult === GameResult.DEFEAT) {
-      this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est descendu **${value}**`).setColor("NotQuiteBlack");
-    } else if (gameResult === GameResult.VICTORY) {
-      this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est monté **${value}**`).setColor("Gold");
-    }
-    return this.embedBuilder;
-  }
+	buildRank(gameResult: GameResult, value: string): EmbedBuilder {
+		if (gameResult === GameResult.DEFEAT) {
+			this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est descendu **${this.summoner.getTier()} ${value}**`).setColor('DarkRed');
+		} else if (gameResult === GameResult.VICTORY) {
+			this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est monté **${this.summoner.getTier()} ${value}**`).setColor('DarkGreen');
+		}
+		return this.embedBuilder;
+	}
 
-  formatGameDuration(duration: number) {
-    const minutes = Math.floor(duration / 60);
-    const seconds = duration % 60;
+	buildTier(gameResult: GameResult, value: Tier): EmbedBuilder {
+		if (gameResult === GameResult.DEFEAT) {
+			this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est descendu **${value}**`).setColor('NotQuiteBlack');
+		} else if (gameResult === GameResult.VICTORY) {
+			this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est monté **${value}**`).setColor('Gold');
+		}
+		return this.embedBuilder;
+	}
 
-    const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+	formatGameDuration(duration: number) {
+		const minutes = Math.floor(duration / 60);
+		const seconds = duration % 60;
 
-    return `${minutes}:${formattedSeconds}`;
-  }
+		const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+
+		return `${minutes}:${formattedSeconds}`;
+	}
 }
