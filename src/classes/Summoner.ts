@@ -52,12 +52,17 @@ class Summoner {
   }
 
   async loadData() {
-    const data = (await this.riotService.getSummonerById(this.id)).data;
-    if (!data) return false;
-    this.puuid = data.puuid;
-    if (!(await this.getLastGameId())) return false;
-    if (!(await this.loadRank())) return false;
-    return true;
+    try {
+      const data = (await this.riotService.getSummonerById(this.id)).data;
+      if (!data) return false;
+      this.puuid = data.puuid;
+      if (!(await this.getLastGameId())) return false;
+      if (!(await this.loadRank())) return false;
+      return true;
+    } catch (error) {
+      this.logError(error)
+      return false;
+    }
   }
 
   async getLastGameId() {
@@ -80,22 +85,27 @@ class Summoner {
   }
 
   async check(): Promise<EmbedBuilder | boolean> {
-    const oldTier = this.tier;
-    const oldRank = this.rank;
-    const oldLp = this.lp;
-    const oldLastGameId = this.lastGameId;
-    if (!(await this.loadData())) return false;
-    if (oldLastGameId === this.lastGameId) return false;
-    const msgBuilder = new MessageBuilder(this);
-    const result = this.compareTotalRank(oldTier, oldRank, oldLp);
-    if (result.result === GameResult.REMAKE) return false;
-    const { champion, score, duration, playerName, playerTag } = await this.getLastMatch(this.lastGameId);
-    if (!champion) return false;
+    try {
+      const oldTier = this.tier;
+      const oldRank = this.rank;
+      const oldLp = this.lp;
+      const oldLastGameId = this.lastGameId;
+      if (!(await this.loadData())) return false;
+      if (oldLastGameId === this.lastGameId) return false;
+      const msgBuilder = new MessageBuilder(this);
+      const result = this.compareTotalRank(oldTier, oldRank, oldLp);
+      if (result.result === GameResult.REMAKE) return false;
+      const { champion, score, duration, playerName, playerTag } = await this.getLastMatch(this.lastGameId);
+      if (!champion) return false;
 
-    // Get the OPGG link
-    const opggLink = this.getOpggLink(playerName, playerTag)
+      // Get the OPGG link
+      const opggLink = this.getOpggLink(playerName, playerTag)
 
-    return msgBuilder.build(result.result, result.type, result.value, champion, score, duration, opggLink);
+      return msgBuilder.build(result.result, result.type, result.value, champion, score, duration, opggLink);
+    } catch (e) {
+      this.logError(e)
+      return false;
+    }
   }
 
   async getLastMatch(matchId: string): Promise<{ champion: string; score: string, duration: number, playerName: string, playerTag: string }> {
@@ -236,6 +246,12 @@ class Summoner {
         return Tier.UNRANK;
       }
     }
+  }
+
+  private logError(error: any) {
+    console.log("[ERROR] -----------------------------------------------------------------------------------------");
+    console.log(error);
+    console.log("[FIN ERROR] -----------------------------------------------------------------------------------------")
   }
 }
 
