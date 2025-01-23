@@ -35,9 +35,6 @@ client.once("ready", async () => {
 
 client.on("messageCreate", async (message: any) => {
   const channel: TextChannel | any = client.channels.cache.get(channelId);
-  if (message.content.toLowerCase().includes("samuel") && !message.author.bot) {
-    message.reply("https://tenor.com/view/samuel-funny-dog-smile-happy-gif-17384183");
-  }
 
   if (message.content.toLowerCase().startsWith("!key ") && message.author.id === "330746797842759681") {
     const newKey = message.content.split(" ")[1].trim();
@@ -61,7 +58,7 @@ async function track(summoners: Summoner[]) {
       // Delay between summoners
       await new Promise(resolve => setTimeout(resolve, 1500));
     });
-  }, 180000);
+  }, 240000);
 }
 
 const app = express();
