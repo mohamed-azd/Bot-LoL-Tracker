@@ -58,7 +58,7 @@ async function track(summoners: Summoner[]) {
       // Delay between summoners
       await new Promise(resolve => setTimeout(resolve, 1500));
     });
-  }, 240000);
+  }, 180000);
 }
 
 const app = express();
