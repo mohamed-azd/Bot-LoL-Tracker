@@ -2,6 +2,7 @@ import { Client, GatewayIntentBits, TextChannel } from "discord.js";
 import express, { Request, Response } from "express";
 import Summoner from "./src/classes/Summoner";
 import dotenv from "dotenv";
+import axios from "axios";
 
 dotenv.config();
 
@@ -10,6 +11,7 @@ const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates],
 });
 const token = process.env.BOT_TOKEN;
+const port = 8000;
 
 const summoners = [
   new Summoner("Mohamed", "Thv9OHEhk7foYhwnwIlZSKMs-TVXOOliR-XIncJ3rQkUOuX7", "330746797842759681"), // me
@@ -51,6 +53,15 @@ async function track(summoners: Summoner[]) {
   const channel: TextChannel | any = client.channels.cache.get(channelId);
   setInterval(async () => {
     console.log("Tracking ...");
+
+    // Ping its own endpoint to keep it active (and avoid sleeping mode of Koyeb...)
+    axios.get(`http://localhost:${port}/health`).then(() => {
+      console.log("Je requete /health pour éviter que koyeb m'arrête...")
+    }).catch((erorr) => {
+      console.log("Je n'ai pas réussi à appeler /health...")
+      console.log(erorr)
+    });
+
     summoners.forEach(async (summoner) => {
       const changes = await summoner.check();
       console.log(changes);
@@ -62,7 +73,6 @@ async function track(summoners: Summoner[]) {
 }
 
 const app = express();
-const port = 8000; // Port de contrôle de santé
 
 // Health check endpoint
 app.get("/health", (req: Request, res: Response) => {
