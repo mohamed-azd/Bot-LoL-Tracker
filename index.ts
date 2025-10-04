@@ -12,12 +12,12 @@ const client = new Client({
 const token = process.env.BOT_TOKEN;
 
 const summoners = [
-  new Summoner("Mohamed", "Thv9OHEhk7foYhwnwIlZSKMs-TVXOOliR-XIncJ3rQkUOuX7", "330746797842759681"), // me
-  new Summoner("Ewen", "jxxqj7MZXUeq1B3iJLHLNKfsW--x83dnkg5Q2IQA8ZdI2E5GZe97Iv9-OA", "410796897398423563"), // ewen
-  new Summoner("Raphaël", "pjc66RDlPA8f0IpLsJVuxNvOYS9276AWba92sHJBU828TgU", "328484167119536128"), // raph
-  new Summoner("Julien", "DFST_qORn2PSAjSPHHi35-zxqfiGaDnjVw4JJadiT8goEAmIJfeiv2Nc_g", "571030411346706446"), // julien
-  new Summoner("Eliott", "l_0JwNv-TGcQGwSAvLZLEnyKFs7GRvw_V_Dz942jpKZJqWqi", "1041340632272228382"), // eliott
-  new Summoner("Arthur", "LfijrIMWDlhbwAM7lNU-fcW_uOzZGm0_8JDNCABchHKsiJ9Dd7sd6ileNA", "548117430702964769"), // arthur
+  new Summoner("Mohamed", "PxSQZ7gOVeQycFfGa8t753oxKn4DSShMZKa7YxFIl_tKm65KcEmDLI--xRCFWnaNrkHlctf9NJDIZw", "330746797842759681"),
+  new Summoner("Ewen", "aFUPBcQKqVsDgzW_7KAhipehx1ooPD_5e_XUD0DXXwPncD9YEYPVaSsD5FMwROH2hiRfyLnXQnfUxQ", "410796897398423563"),
+  new Summoner("Raphaël", "_n9UFPKqgFAMpwW5kRz2pz-aEd_l8gSjNUXr90G2l_N_jYa3SDV5vh68ZkTQol8KLZNyTk3z30MBGQ", "328484167119536128"),
+  new Summoner("Julien", "mfm-fI3gn06ftEa-mLPhh9T3ChWbOiB5uFew1BGi8JDwyJr8S03aa7OKMhof40R9vub5E6HG6UMYww", "571030411346706446"),
+  new Summoner("Eliott", "3DgYEwlHA_arPajBwrHcky7g9KdQwW30v21rFzs17ESPl-6XZ0sQ5RKhC-U513i7GTfnI_Kdr4iaRA", "1041340632272228382"),
+  new Summoner("Arthur", "9HNoIqT-sFXgp7uXdZ7TSSIMotFyAbGhxrj3joddQXNJ4WWU4U-Pa5gufhBRM-Ou8i93uF-Yaxp4zg", "548117430702964769"),
 ];
 
 client.once("ready", async () => {

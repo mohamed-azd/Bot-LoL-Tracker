@@ -5,7 +5,6 @@ import Tier from "../types/tier";
 import MessageBuilder from "./MessageBuilder";
 
 class Summoner {
-  private id: string;
   private puuid: string;
   private name: string;
   private discordAt: string;
@@ -15,9 +14,8 @@ class Summoner {
   private lastGameId: string;
   private riotService: RiotService;
 
-  constructor(name: string, id: string, discordAt: string) {
-    this.id = id;
-    this.puuid = "";
+  constructor(name: string, puuid: string, discordAt: string) {
+    this.puuid = puuid;
     this.name = name;
     this.discordAt = discordAt;
     this.tier = Tier.UNRANK;
@@ -53,7 +51,7 @@ class Summoner {
 
   async loadData() {
     try {
-      const data = (await this.riotService.getSummonerById(this.id)).data;
+      const data = (await this.riotService.getSummonerByPuuid(this.puuid)).data;
       if (!data) return false;
       this.puuid = data.puuid;
       if (!(await this.getLastGameId())) return false;
@@ -73,7 +71,7 @@ class Summoner {
   }
 
   async loadRank() {
-    let result = (await this.riotService.getRank(this.id)).data;
+    let result = (await this.riotService.getRank(this.puuid)).data;
     result = result.filter((obj: any) => obj.queueType === 'RANKED_SOLO_5x5');
     const data = result[0];
     console.log(data);

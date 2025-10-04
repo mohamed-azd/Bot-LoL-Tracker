@@ -18,17 +18,9 @@ class RiotService {
     return axios(config);
   }
 
-  async getSummonerByName(name: string): Promise<AxiosResponse> {
+  async getSummonerByPuuid(puuid: string): Promise<AxiosResponse> {
     const config = {
-      url: this.getUrl(`/summoner/v4/summoners/by-name/${name}`),
-      method: "GET",
-    };
-    return await this.call(config);
-  }
-
-  async getSummonerById(id: string): Promise<AxiosResponse> {
-    const config = {
-      url: this.getUrl(`/summoner/v4/summoners/${id}`),
+      url: this.getUrl(`/summoner/v4/summoners/by-puuid/${puuid}`),
       method: "GET",
     };
     return await this.call(config);
@@ -50,9 +42,9 @@ class RiotService {
     return await this.call(config);
   }
 
-  async getRank(summonerId: string): Promise<AxiosResponse> {
+  async getRank(summonerPuuid: string): Promise<AxiosResponse> {
     const config = {
-      url: this.getUrl(`/league/v4/entries/by-summoner/${summonerId}`),
+      url: this.getUrl(`/league/v4/entries/by-puuid/${summonerPuuid}`),
       method: "GET",
     };
     return await this.call(config);
