@@ -1,17 +1,17 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import env from "../config/env"
 
 class RiotService {
   private baseUrl = "https://euw1.api.riotgames.com/lol";
   private baseUrlMatches = "https://europe.api.riotgames.com/lol";
-  private apiKey = process.env.RIOT_API_KEY;
 
   getUrl(route = "") {
-    return this.baseUrl + route + `?api_key=${this.apiKey}`;
+    return this.baseUrl + route + `?api_key=${env.RIOT_API_KEY}`;
   }
 
   getMatchesUrl(route = "", firstArg = true) {
     const prefix = firstArg ? "?" : "&"
-    return this.baseUrlMatches + route + `${prefix}api_key=${this.apiKey}`;
+    return this.baseUrlMatches + route + `${prefix}api_key=${env.RIOT_API_KEY}`;
   }
 
   async call(config: AxiosRequestConfig): Promise<AxiosResponse> {

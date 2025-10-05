@@ -2,14 +2,14 @@ import { Client, GatewayIntentBits, TextChannel } from "discord.js";
 import express, { Request, Response } from "express";
 import Summoner from "./src/classes/Summoner";
 import dotenv from "dotenv";
+import env from "./src/config/env";
+
 
 dotenv.config();
 
-const channelId: string | any = process.env.CHANNEL_ID;
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildVoiceStates],
 });
-const token = process.env.BOT_TOKEN;
 
 const summoners = [
   new Summoner("Mohamed", "PxSQZ7gOVeQycFfGa8t753oxKn4DSShMZKa7YxFIl_tKm65KcEmDLI--xRCFWnaNrkHlctf9NJDIZw", "330746797842759681"),
@@ -33,22 +33,8 @@ client.once("ready", async () => {
   }
 });
 
-client.on("messageCreate", async (message: any) => {
-  const channel: TextChannel | any = client.channels.cache.get(channelId);
-
-  if (message.content.toLowerCase().startsWith("!key ") && message.author.id === "330746797842759681") {
-    const newKey = message.content.split(" ")[1].trim();
-    process.env.RIOT_API_KEY = newKey;
-    // checks that the key is updated
-    if (process.env.RIOT_API_KEY === newKey) {
-      message.reply("Clé Riot mise à jour !")
-      await client.destroy()
-    }
-  }
-});
-
 async function track(summoners: Summoner[]) {
-  const channel: TextChannel | any = client.channels.cache.get(channelId);
+  const channel: TextChannel | any = client.channels.cache.get(env.CHANNEL_ID);
   setInterval(async () => {
     console.log("Tracking ...");
     summoners.forEach(async (summoner) => {
@@ -73,4 +59,4 @@ app.listen(port, () => {
   console.log(`Serveur de contrôle de santé en cours d'exécution sur le port ${port}`);
 });
 
-client.login(token);
+client.login(env.BOT_TOKEN);
