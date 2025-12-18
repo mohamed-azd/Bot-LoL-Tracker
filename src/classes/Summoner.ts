@@ -3,6 +3,7 @@ import RiotService from "../services/apiRiot";
 import GameResult from "../types/gameResult";
 import Tier from "../types/tier";
 import MessageBuilder from "./MessageBuilder";
+import logger from "../config/logger";
 
 class Summoner {
   private puuid: string;
@@ -18,7 +19,7 @@ class Summoner {
     this.puuid = puuid;
     this.name = name;
     this.discordAt = discordAt;
-    this.tier = Tier.UNRANK;
+    this.tier = Tier.UNRANKED;
     this.rank = "";
     this.lp = 0;
     this.lastGameId = "";
@@ -58,7 +59,7 @@ class Summoner {
       if (!(await this.loadRank())) return false;
       return true;
     } catch (error) {
-      this.logError(error)
+      logger.error(error);
       return false;
     }
   }
@@ -74,7 +75,6 @@ class Summoner {
     let result = (await this.riotService.getRank(this.puuid)).data;
     result = result.filter((obj: any) => obj.queueType === 'RANKED_SOLO_5x5');
     const data = result[0];
-    console.log(data);
     if (!data || data?.queueType !== "RANKED_SOLO_5x5") return false;
     this.tier = this.strToTier(data.tier);
     this.rank = data.rank;
@@ -100,8 +100,8 @@ class Summoner {
       const opggLink = this.getOpggLink(playerName, playerTag)
 
       return msgBuilder.build(result.result, result.type, result.value, champion, score, duration, opggLink);
-    } catch (e) {
-      this.logError(e)
+    } catch (error) {
+      logger.error(error);
       return false;
     }
   }
@@ -189,13 +189,8 @@ class Summoner {
     if (order.indexOf(currentRank) === order.indexOf(newRank)) return "same";
   }
 
-  getData() {
-    return {
-      name: this.name,
-      tier: this.tier,
-      rank: this.rank,
-      lp: this.lp,
-    };
+  toString() {
+    return `${this.getName()} (${this.getTier()} ${this.getRank()} ${this.getLp()})`;
   }
 
   strToTier(tier: string): Tier {
@@ -241,15 +236,9 @@ class Summoner {
       }
 
       default: {
-        return Tier.UNRANK;
+        return Tier.UNRANKED;
       }
     }
-  }
-
-  private logError(error: any) {
-    console.log("[ERROR] -----------------------------------------------------------------------------------------");
-    console.log(error);
-    console.log("[FIN ERROR] -----------------------------------------------------------------------------------------")
   }
 }
 

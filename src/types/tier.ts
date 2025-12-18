@@ -1,5 +1,5 @@
 enum Tier {
-  UNRANK = "UNRANK",
+  UNRANKED = "UNRANKED",
   IRON = "IRON",
   BRONZE = "BRONZE",
   SILVER = "SILVER",
