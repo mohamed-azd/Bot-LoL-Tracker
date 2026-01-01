@@ -1,7 +1,8 @@
-import { EmbedBuilder } from 'discord.js';
+import {EmbedBuilder} from 'discord.js';
 import GameResult from '../types/gameResult';
 import Summoner from './Summoner';
-import Tier from '../types/tier';
+import {GameSummary} from "../types/GameSummary";
+import {RankChangeType} from "../types/RankChangeType";
 
 export default class MessageBuilder {
 	private summoner: Summoner;
@@ -12,83 +13,86 @@ export default class MessageBuilder {
 	}
 
 	build(
-		gameResult: GameResult,
-		type: string,
-		value: any,
+		gameSummary: GameSummary,
 		champion: string,
 		score: string,
 		duration: number,
 		opggLink: string
 	): EmbedBuilder | boolean {
-		if (gameResult === GameResult.REMAKE) return false;
+		if (gameSummary.result === GameResult.REMAKE) return false;
 
 		const gameDuration = this.formatGameDuration(duration);
-
-		this.embedBuilder.setTitle(gameResult);
-
-		// Add champion, score and game duration
+		this.embedBuilder.setTitle(gameSummary.result);
 		this.embedBuilder.addFields(
 			{ name: 'Champion', value: champion },
 			{ name: 'Score', value: score },
 			{ name: 'Durée', value: gameDuration },
 			{ name: 'Détails', value: `[**OPGG**](${opggLink})` }
 		);
-
-		// Add champion image
 		this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/15.2.1/img/champion/${champion}.png`);
-		switch (type.toUpperCase()) {
-			case 'LP': {
-				return this.buildLp(gameResult, value);
-			}
 
-			case 'RANK': {
-				return this.buildRank(gameResult, value);
+		let message;
+		switch (gameSummary.type) {
+			case RankChangeType.LP: {
+				message = this.buildLp(gameSummary.result, gameSummary.lpDiff);
+				break;
 			}
-
-			case 'TIER': {
-				return this.buildTier(gameResult, value);
+			case RankChangeType.RANK: {
+				message = this.buildRank(gameSummary.result);
+				break;
 			}
-
+			case RankChangeType.TIER: {
+				message = this.buildTier(gameSummary.result);
+				break;
+			}
 			default: {
-				return false;
+				message = false;
+				break;
 			}
 		}
+		this.buildLpDiff(gameSummary.lpDiff, gameSummary.result);
+
+		return message;
 	}
 
-	buildLp(gameResult: GameResult, value: number): EmbedBuilder {
+	buildLp(gameResult: GameResult, lpDiff: number): EmbedBuilder {
 		if (gameResult === GameResult.DEFEAT) {
-			if (value === 0) {
+			if (lpDiff === 0) {
 				this.embedBuilder
 					.addFields({
 						name: ' ',
 						value: `Aïe aïe aïe, défaite à 0 LP pour ${this.summoner.getDiscordAt()}\nTu vas descendre ! :joy: :index_pointing_at_the_viewer: `,
 					})
 					.setColor('Red');
-			} else {
-				this.embedBuilder.addFields({ name: ' ', value: `**-${value} LP**` }).setColor('Red');
 			}
-		} else if (gameResult === GameResult.VICTORY) {
-			this.embedBuilder.addFields({ name: ' ', value: `**+ ${value} LP**` }).setColor('Green');
 		}
 		this.embedBuilder.setDescription(this.summoner.getTotalRank());
 		return this.embedBuilder;
 	}
 
-	buildRank(gameResult: GameResult, value: string): EmbedBuilder {
+	buildRank(gameResult: GameResult): EmbedBuilder {
+		let description = "";
+		const color = gameResult === GameResult.DEFEAT ? 'DarkRed' : 'DarkGreen';
 		if (gameResult === GameResult.DEFEAT) {
-			this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est descendu **${this.summoner.getTier()} ${value}**`).setColor('DarkRed');
+			description = `*Descente **${this.summoner.getTier()} ${this.summoner.getRank()}** *`;
 		} else if (gameResult === GameResult.VICTORY) {
-			this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est monté **${this.summoner.getTier()} ${value}**`).setColor('DarkGreen');
+			description = `*Montée **${this.summoner.getTier()} ${this.summoner.getRank()}** *`;
 		}
+		description += `\n\n${this.summoner.getTotalRank()}`;
+		this.embedBuilder.setDescription(description).setColor(color);
 		return this.embedBuilder;
 	}
 
-	buildTier(gameResult: GameResult, value: Tier): EmbedBuilder {
+	buildTier(gameResult: GameResult): EmbedBuilder {
+		let description = "";
+		const color = gameResult === GameResult.DEFEAT ? 'NotQuiteBlack' : 'Gold';
 		if (gameResult === GameResult.DEFEAT) {
-			this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est descendu **${value}**`).setColor('NotQuiteBlack');
+			description = `Descente en **${this.summoner.getTier()}**`;
 		} else if (gameResult === GameResult.VICTORY) {
-			this.embedBuilder.setDescription(`${this.summoner.getDiscordAt()} est monté **${value}**`).setColor('Gold');
+			description = `*Montée en **${this.summoner.getTier()}** *`;
 		}
+		description += `\n\n${this.summoner.getTotalRank()}`;
+		this.embedBuilder.setDescription(description).setColor(color);
 		return this.embedBuilder;
 	}
 
@@ -99,5 +103,10 @@ export default class MessageBuilder {
 		const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
 
 		return `${minutes}:${formattedSeconds}`;
+	}
+
+	buildLpDiff(lpDiff: number, gameResult: GameResult) {
+		const prefix = gameResult == GameResult.DEFEAT ? "-" : gameResult == GameResult.VICTORY ? "+" : "";
+		this.embedBuilder.addFields({ name: ' ', value: `**${prefix}${Math.abs(lpDiff)} LP**` });
 	}
 }

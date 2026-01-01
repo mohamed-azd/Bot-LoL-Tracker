@@ -2,6 +2,9 @@ import RiotService from "../services/apiRiot";
 import GameResult from "../types/gameResult";
 import Tier from "../types/tier";
 import MessageBuilder from "./MessageBuilder";
+import RankCalculator from "../utils/RankCalculator";
+import {GameSummary} from "../types/GameSummary";
+import {RankChangeType} from "../types/RankChangeType";
 
 class Summoner {
   private puuid: string;
@@ -89,15 +92,15 @@ class Summoner {
     await this.loadData();
     if (oldLastGameId === this.lastGameId) return null;
 
-    const msgBuilder = new MessageBuilder(this);
-    const result = this.compareTotalRank(oldTier, oldRank, oldLp);
-    if (result.result === GameResult.REMAKE) return null;
-
     const { champion, score, duration, playerName, playerTag } = await this.getLastMatch(this.lastGameId);
     if (!champion) throw new Error(`Could not retrieve match details for game ${this.lastGameId}`);
 
-    const opggLink = this.getOpggLink(playerName, playerTag)
-    return msgBuilder.build(result.result, result.type, result.value, champion, score, duration, opggLink);
+    const msgBuilder = new MessageBuilder(this);
+    const gameSummary = this.compareTotalRank(oldTier, oldRank, oldLp);
+    if (gameSummary.result === GameResult.REMAKE) return null;
+
+    const opggLink = this.getOpggLink(playerName, playerTag);
+    return msgBuilder.build(gameSummary, champion, score, duration, opggLink);
   }
 
   async getLastMatch(matchId: string): Promise<{ champion: string; score: string, duration: number, playerName: string, playerTag: string }> {
@@ -137,35 +140,37 @@ class Summoner {
     return `https://www.op.gg/summoners/euw/${playerName}-${playerTag}`
   }
 
-  compareTotalRank(currentTier: Tier, currentRank: string, currentLp: number): Compare {
+  compareTotalRank(currentTier: Tier, currentRank: string, currentLp: number): GameSummary {
+    const lpDiff = RankCalculator.getLpDiff(currentTier, currentRank, currentLp, this.tier, this.rank, this.lp);
+
     // Same tier
     if (this.compareTier(currentTier, this.tier) === "same") {
       // Same rank
       if (this.compareRank(currentRank, this.rank) === "same") {
         // Win lp
-        if (this.lp > currentLp) return { result: GameResult.VICTORY, type: "LP", value: this.lp - currentLp };
+        if (this.lp > currentLp) return { result: GameResult.VICTORY, type: RankChangeType.LP, lpDiff: lpDiff };
         // Loss lp
-        if (this.lp < currentLp) return { result: GameResult.DEFEAT, type: "LP", value: currentLp - this.lp };
+        if (this.lp < currentLp) return { result: GameResult.DEFEAT, type: RankChangeType.LP, lpDiff: lpDiff };
         // Loss at 0lp
-        if (this.lp == 0 && currentLp == 0) return { result: GameResult.DEFEAT, type: "LP", value: 0 };
+        if (this.lp == 0 && currentLp == 0) return { result: GameResult.DEFEAT, type: RankChangeType.LP, lpDiff: 0 };
         // Game remake
-        return { result: GameResult.REMAKE, type: "", value: 0 };
+        return { result: GameResult.REMAKE, type: RankChangeType.NOTHING, lpDiff: 0 };
       } else if (this.compareRank(currentRank, this.rank) === "downgrade") {
         // Loss rank
-        return { result: GameResult.DEFEAT, type: "RANK", value: this.rank };
+        return { result: GameResult.DEFEAT, type: RankChangeType.RANK, lpDiff: lpDiff };
       } else {
         // Win rank
-        return { result: GameResult.VICTORY, type: "RANK", value: this.rank };
+        return { result: GameResult.VICTORY, type: RankChangeType.RANK, lpDiff: lpDiff };
       }
     } else if (this.compareTier(currentTier, this.tier) === "downgrade") {
       // Loss tier
-      return { result: GameResult.DEFEAT, type: "TIER", value: this.tier };
+      return { result: GameResult.DEFEAT, type: RankChangeType.TIER, lpDiff: lpDiff };
     } else if (this.compareTier(currentTier, this.tier) === "upgrade") {
       // Win tier
-      return { result: GameResult.VICTORY, type: "TIER", value: this.tier };
+      return { result: GameResult.VICTORY, type: RankChangeType.TIER, lpDiff: lpDiff };
     } else {
       // error
-      return { result: GameResult.REMAKE, type: "", value: 0 }
+      return { result: GameResult.REMAKE, type: RankChangeType.NOTHING, lpDiff: 0 }
     }
   }
 
@@ -236,10 +241,6 @@ class Summoner {
   }
 }
 
-type Compare = {
-  result: GameResult;
-  type: string;
-  value: Tier | string | number;
-};
+
 
 export default Summoner;
