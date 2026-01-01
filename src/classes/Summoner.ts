@@ -14,6 +14,8 @@ class Summoner {
   private rank: string;
   private lp: number;
   private lastGameId: string;
+  private nbWins;
+  private nbLosses;
   private riotService: RiotService;
 
   constructor(name: string, puuid: string, discordAt: string) {
@@ -24,6 +26,8 @@ class Summoner {
     this.rank = "";
     this.lp = 0;
     this.lastGameId = "";
+    this.nbWins = 0;
+    this.nbLosses = 0;
     this.riotService = new RiotService();
   }
 
@@ -45,6 +49,14 @@ class Summoner {
 
   getLp(): number {
     return this.lp;
+  }
+
+  getNbWins(): number {
+    return this.nbWins;
+  }
+
+  getNbLosses(): number {
+    return this.nbLosses;
   }
 
   getTotalRank(): string {
@@ -86,6 +98,8 @@ class Summoner {
     this.tier = this.strToTier(data.tier);
     this.rank = data.rank;
     this.lp = data.leaguePoints;
+    this.nbWins = data.wins;
+    this.nbLosses = data.losses;
   }
 
   async check() {

@@ -86,7 +86,7 @@ export default class MessageBuilder {
 		let description = "";
 		const color = gameResult === GameResult.DEFEAT ? 'NotQuiteBlack' : 'Gold';
 		if (gameResult === GameResult.DEFEAT) {
-			description = `Descente en **${this.summoner.getTier()}**`;
+			description = `*Descente en **${this.summoner.getTier()}** *`;
 		} else if (gameResult === GameResult.VICTORY) {
 			description = `*Montée en **${this.summoner.getTier()}** *`;
 		}
