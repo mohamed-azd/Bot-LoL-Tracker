@@ -51,11 +51,15 @@ class Summoner {
     return `${this.getDiscordAt()} est **${this.tier} ${this.rank}** ${this.lp} LP`;
   }
 
+  getGlobalScore(): number {
+    return RankCalculator.getGlobalLp(this.tier, this.rank, this.lp);
+  }
+
   async loadData() {
     const response = await this.riotService.getSummonerByPuuid(this.puuid);
     const data = response.data;
     if (!data) throw new Error(`Summoner data not found for PUUID: ${this.puuid}`);
-    
+
     this.puuid = data.puuid;
     await this.getLastGameId();
     await this.loadRank();
@@ -65,7 +69,7 @@ class Summoner {
     const response = await this.riotService.getLastGameId(this.puuid);
     const data = response.data;
     if (!data || data.length === 0) throw new Error(`No match history found for ${this.name}`);
-    
+
     this.lastGameId = data[0];
   }
 
@@ -73,8 +77,9 @@ class Summoner {
     let result = (await this.riotService.getRank(this.puuid)).data;
     result = result.filter((obj: any) => obj.queueType === 'RANKED_SOLO_5x5');
     const data = result[0];
-    
+
     if (!data || data?.queueType !== "RANKED_SOLO_5x5") {
+       this.tier = Tier.UNRANKED;
        throw new Error(`No SOLO/DUO rank found for ${this.name}`);
     }
 
@@ -116,7 +121,7 @@ class Summoner {
     let champion = "";
     let playerName = "";
     let playerTag = "";
-    
+
     if (matchInfos) {
       // Find summoner
       players.forEach((player) => {
@@ -129,7 +134,7 @@ class Summoner {
           playerTag = player.riotIdTagline
         }
       });
-      
+
     }
 
     return { champion: champion, score: `${score.kills} / ${score.deaths} / ${score.assists}`, duration, playerName, playerTag };

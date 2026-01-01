@@ -1,5 +1,6 @@
-import { Client, GatewayIntentBits, TextChannel } from "discord.js";
+import { Client, GatewayIntentBits, TextChannel, Events, Message } from "discord.js";
 import Summoner from "../classes/Summoner";
+import LeaderboardBuilder from "../classes/LeaderboardBuilder";
 import logger from "../config/logger";
 import env from "../config/env";
 
@@ -33,6 +34,18 @@ export default class DiscordClient {
             await this.initSummoners();
             this.startTracking();
         });
+
+        this.client.on(Events.MessageCreate, async (message: Message) => {
+            if (message.author.bot) return;
+            if (message.content === "!classement") {
+                await this.handleLeaderboard(message);
+            }
+        });
+    }
+
+    private async handleLeaderboard(message: Message) {
+        const embed = LeaderboardBuilder.build(this.summoners);
+        await message.channel.send({ embeds: [embed] });
     }
 
     private async initSummoners() {
