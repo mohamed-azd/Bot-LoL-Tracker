@@ -1,9 +1,7 @@
-import { EmbedBuilder } from "discord.js";
 import RiotService from "../services/apiRiot";
 import GameResult from "../types/gameResult";
 import Tier from "../types/tier";
 import MessageBuilder from "./MessageBuilder";
-import logger from "../config/logger";
 
 class Summoner {
   private puuid: string;
