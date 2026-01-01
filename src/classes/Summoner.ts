@@ -51,59 +51,55 @@ class Summoner {
   }
 
   async loadData() {
-    try {
-      const data = (await this.riotService.getSummonerByPuuid(this.puuid)).data;
-      if (!data) return false;
-      this.puuid = data.puuid;
-      if (!(await this.getLastGameId())) return false;
-      if (!(await this.loadRank())) return false;
-      return true;
-    } catch (error) {
-      logger.error(error);
-      return false;
-    }
+    const response = await this.riotService.getSummonerByPuuid(this.puuid);
+    const data = response.data;
+    if (!data) throw new Error(`Summoner data not found for PUUID: ${this.puuid}`);
+    
+    this.puuid = data.puuid;
+    await this.getLastGameId();
+    await this.loadRank();
   }
 
   async getLastGameId() {
-    const data = (await this.riotService.getLastGameId(this.puuid)).data;
-    if (!data) return false;
+    const response = await this.riotService.getLastGameId(this.puuid);
+    const data = response.data;
+    if (!data || data.length === 0) throw new Error(`No match history found for ${this.name}`);
+    
     this.lastGameId = data[0];
-    return true;
   }
 
   async loadRank() {
     let result = (await this.riotService.getRank(this.puuid)).data;
     result = result.filter((obj: any) => obj.queueType === 'RANKED_SOLO_5x5');
     const data = result[0];
-    if (!data || data?.queueType !== "RANKED_SOLO_5x5") return false;
+    
+    if (!data || data?.queueType !== "RANKED_SOLO_5x5") {
+       throw new Error(`No SOLO/DUO rank found for ${this.name}`);
+    }
+
     this.tier = this.strToTier(data.tier);
     this.rank = data.rank;
     this.lp = data.leaguePoints;
-    return true;
   }
 
-  async check(): Promise<EmbedBuilder | boolean> {
-    try {
-      const oldTier = this.tier;
-      const oldRank = this.rank;
-      const oldLp = this.lp;
-      const oldLastGameId = this.lastGameId;
-      if (!(await this.loadData())) return false;
-      if (oldLastGameId === this.lastGameId) return false;
-      const msgBuilder = new MessageBuilder(this);
-      const result = this.compareTotalRank(oldTier, oldRank, oldLp);
-      if (result.result === GameResult.REMAKE) return false;
-      const { champion, score, duration, playerName, playerTag } = await this.getLastMatch(this.lastGameId);
-      if (!champion) return false;
+  async check() {
+    const oldTier = this.tier;
+    const oldRank = this.rank;
+    const oldLp = this.lp;
+    const oldLastGameId = this.lastGameId;
 
-      // Get the OPGG link
-      const opggLink = this.getOpggLink(playerName, playerTag)
+    await this.loadData();
+    if (oldLastGameId === this.lastGameId) return null;
 
-      return msgBuilder.build(result.result, result.type, result.value, champion, score, duration, opggLink);
-    } catch (error) {
-      logger.error(error);
-      return false;
-    }
+    const msgBuilder = new MessageBuilder(this);
+    const result = this.compareTotalRank(oldTier, oldRank, oldLp);
+    if (result.result === GameResult.REMAKE) return null;
+
+    const { champion, score, duration, playerName, playerTag } = await this.getLastMatch(this.lastGameId);
+    if (!champion) throw new Error(`Could not retrieve match details for game ${this.lastGameId}`);
+
+    const opggLink = this.getOpggLink(playerName, playerTag)
+    return msgBuilder.build(result.result, result.type, result.value, champion, score, duration, opggLink);
   }
 
   async getLastMatch(matchId: string): Promise<{ champion: string; score: string, duration: number, playerName: string, playerTag: string }> {

@@ -61,9 +61,8 @@ describe("Summoner Logic", () => {
   test("should load initial data correctly", async () => {
     setupMocks("GOLD", "IV", 50, "EUW1_123456");
 
-    const success = await summoner.loadData();
+    await summoner.loadData();
 
-    expect(success).toBe(true);
     expect(summoner.getTier()).toBe(Tier.GOLD);
     expect(summoner.getRank()).toBe("IV");
     expect(summoner.getLp()).toBe(50);
@@ -79,7 +78,7 @@ describe("Summoner Logic", () => {
     
     const result = await summoner.check();
 
-    expect(result).not.toBe(false);
+    expect(result).not.toBeNull();
     expect(summoner.getLp()).toBe(70);
   });
 
@@ -92,7 +91,7 @@ describe("Summoner Logic", () => {
     setupMocks("GOLD", "IV", 30, "EUW1_123457", false);
 
     const result = await summoner.check();
-    expect(result).not.toBe(false);
+    expect(result).not.toBeNull();
     expect(summoner.getLp()).toBe(30);
   });
 
@@ -105,7 +104,7 @@ describe("Summoner Logic", () => {
     setupMocks("GOLD", "III", 10, "EUW1_123457", true);
 
     const result = await summoner.check();
-    expect(result).not.toBe(false);
+    expect(result).not.toBeNull();
     expect(summoner.getRank()).toBe("III");
   });
 
@@ -118,7 +117,7 @@ describe("Summoner Logic", () => {
     setupMocks("GOLD", "IV", 75, "EUW1_123457", false);
 
     const result = await summoner.check();
-    expect(result).not.toBe(false);
+    expect(result).not.toBeNull();
     expect(summoner.getRank()).toBe("IV");
   });
 
@@ -131,11 +130,11 @@ describe("Summoner Logic", () => {
     setupMocks("PLATINUM", "IV", 1, "EUW1_123457", true);
 
     const result = await summoner.check();
-    expect(result).not.toBe(false);
+    expect(result).not.toBeNull();
     expect(summoner.getTier()).toBe(Tier.PLATINUM);
   });
 
-  test("should return false if no new game detected", async () => {
+  test("should return null if no new game detected", async () => {
     // 1. Initial State
     setupMocks("GOLD", "IV", 50, "EUW1_123456");
     await summoner.loadData();
@@ -144,7 +143,7 @@ describe("Summoner Logic", () => {
     setupMocks("GOLD", "IV", 50, "EUW1_123456");
 
     const result = await summoner.check();
-    expect(result).toBe(false);
+    expect(result).toBeNull();
   });
   
   test("compareTotalRank logic directly", () => {
