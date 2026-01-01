@@ -62,11 +62,10 @@ export default class MessageBuilder {
 					.addFields({
 						name: ' ',
 						value: `Aïe aïe aïe, défaite à 0 LP pour ${this.summoner.getDiscordAt()}\nTu vas descendre ! :joy: :index_pointing_at_the_viewer: `,
-					})
-					.setColor('Red');
+					});
 			}
 		}
-		this.embedBuilder.setDescription(this.summoner.getTotalRank());
+		this.embedBuilder.setDescription(this.summoner.getTotalRank()).setColor(gameResult == GameResult.VICTORY ? 'Green' : 'Red');
 		return this.embedBuilder;
 	}
 
