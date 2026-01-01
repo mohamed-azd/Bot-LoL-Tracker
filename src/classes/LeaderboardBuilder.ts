@@ -10,7 +10,8 @@ export default class LeaderboardBuilder {
             .setColor("Gold")
             .setTimestamp();
 
-        let description = "\u200b\n";
+        // Ligne invisible pour forcer la largeur de l'embed
+        let description = "\u200b\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\u2003\n";
         
         sortedSummoners.forEach((summoner, index) => {
             let prefix = "";
