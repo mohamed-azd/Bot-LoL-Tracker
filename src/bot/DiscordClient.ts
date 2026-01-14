@@ -44,8 +44,12 @@ export default class DiscordClient {
     }
 
     private async handleLeaderboard(message: Message) {
-        const embed = LeaderboardBuilder.build(this.summoners);
-        await message.channel.send({ embeds: [embed] });
+        try {
+            const embed = LeaderboardBuilder.build(this.summoners);
+            await message.channel.send({ embeds: [embed] });
+        } catch (error) {
+            logger.error(`Error handling leaderboard: ${error}`);
+        }
     }
 
     private async initSummoners() {
