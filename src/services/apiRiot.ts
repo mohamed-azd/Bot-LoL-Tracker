@@ -15,6 +15,7 @@ class RiotService {
   }
 
   async call(config: AxiosRequestConfig): Promise<AxiosResponse> {
+    config.timeout = 10000;
     return axios(config);
   }
 

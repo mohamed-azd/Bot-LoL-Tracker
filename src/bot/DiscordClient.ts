@@ -40,6 +40,9 @@ export default class DiscordClient {
             if (message.content === "!classement") {
                 await this.handleLeaderboard(message);
             }
+            if (message.content === "!looser") {
+                await this.handleLooser(message);
+            }
         });
     }
 
@@ -49,6 +52,14 @@ export default class DiscordClient {
             await message.channel.send({ embeds: [embed] });
         } catch (error) {
             logger.error(`Error handling leaderboard: ${error}`);
+        }
+    }
+
+    private async handleLooser(message: Message) {
+        try {
+            await message.channel.send("https://tenor.com/view/sleeping-homer-sleeping-simpson-sleeping-nerd-geek-gif-13933454307168757106");
+        } catch (error) {
+            logger.error(`Error handling looser: ${error}`);
         }
     }
 
@@ -65,16 +76,19 @@ export default class DiscordClient {
 
     private startTracking() {
         const trackingDelay = 180_000;
-        const channel: TextChannel | any = this.client.channels.cache.get(env.CHANNEL_ID);
 
         setInterval(async () => {
             logger.info("Tracking ...");
+            const channel = this.client.channels.cache.get(env.CHANNEL_ID) as TextChannel;
+
             for (const summoner of this.summoners) {
                 try {
                     const changes = await summoner.check();
                     if (changes) {
                         logger.info(`New rank : ${summoner.toString()}`);
-                        channel.send({ embeds: [changes] });
+                        if (channel) {
+                            await channel.send({ embeds: [changes] });
+                        }
                     }
                     // Delay between summoners
                     await new Promise(resolve => setTimeout(resolve, 1500));

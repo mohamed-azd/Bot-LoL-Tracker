@@ -18,8 +18,8 @@ export default class MessageBuilder {
 		score: string,
 		duration: number,
 		opggLink: string
-	): EmbedBuilder | boolean {
-		if (gameSummary.result === GameResult.REMAKE) return false;
+	): EmbedBuilder | null {
+		if (gameSummary.result === GameResult.REMAKE) return null;
 
 		const gameDuration = this.formatGameDuration(duration);
 		this.embedBuilder.setTitle(gameSummary.result);
@@ -31,7 +31,7 @@ export default class MessageBuilder {
 		);
 		this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/15.2.1/img/champion/${champion}.png`);
 
-		let message;
+		let message: EmbedBuilder | null;
 		switch (gameSummary.type) {
 			case RankChangeType.LP: {
 				message = this.buildLp(gameSummary.result, gameSummary.lpDiff);
@@ -46,7 +46,7 @@ export default class MessageBuilder {
 				break;
 			}
 			default: {
-				message = false;
+				message = null;
 				break;
 			}
 		}
