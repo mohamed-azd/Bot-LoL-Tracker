@@ -1,0 +1,9 @@
+services:
+  bot-lol-tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bot-lol-tracker
+    container_name: bot-lol-tracker
+    volumes:
+      - ./.env:/app/.env
