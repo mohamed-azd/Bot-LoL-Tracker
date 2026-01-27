@@ -77,26 +77,33 @@ export default class DiscordClient {
     private startTracking() {
         const trackingDelay = 180_000;
 
-        setInterval(async () => {
-            logger.info("Tracking ...");
-            const channel = this.client.channels.cache.get(env.CHANNEL_ID) as TextChannel;
+        const track = async () => {
+            try {
+                logger.info("Tracking ...");
+                const channel = this.client.channels.cache.get(env.CHANNEL_ID) as TextChannel;
 
-            for (const summoner of this.summoners) {
-                try {
-                    const changes = await summoner.check();
-                    if (changes) {
-                        logger.info(`New rank : ${summoner.toString()}`);
-                        if (channel) {
-                            await channel.send({ embeds: [changes] });
+                for (const summoner of this.summoners) {
+                    try {
+                        const changes = await summoner.check();
+                        if (changes) {
+                            logger.info(`New rank : ${summoner.toString()}`);
+                            if (channel) {
+                                await channel.send({ embeds: [changes] });
+                            }
                         }
+                        // Delay between summoners
+                        await new Promise(resolve => setTimeout(resolve, 1500));
+                    } catch (error) {
+                        logger.error(`Tracking error of ${summoner.getName()}: ${error}`);
                     }
-                    // Delay between summoners
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                } catch (error) {
-                    logger.error(`Tracking error of ${summoner.getName()}: ${error}`);
                 }
-
+            } catch (error) {
+                logger.error(`Global tracking error : ${error}`);
             }
-        }, trackingDelay);
+
+            setTimeout(track, trackingDelay);
+        };
+
+        track();
     }
 }
