@@ -25,7 +25,11 @@ export default class LeaderboardBuilder {
             if (summoner.getTier() === "UNRANKED") {
                  description += `${prefix} ${summoner.getDiscordAt()}\n\u2003 *${summoner.getTier()}*\n\n`;
             } else {
-                 description += `${prefix} ${summoner.getDiscordAt()}\n\u2003 *${summoner.getTier()} ${summoner.getRank()}* ${summoner.getLp()} LP (${summoner.getNbWins()}W ${summoner.getNbLosses()}L)\n\n`;
+                 const nbWins = summoner.getNbWins();
+                 const nbLosses = summoner.getNbLosses();
+                 const totalGames = nbWins + nbLosses;
+                 const winrate = totalGames > 0 ? Math.round((nbWins / totalGames) * 100) : 0;
+                 description += `${prefix} ${summoner.getDiscordAt()}\n\u2003 *${summoner.getTier()} ${summoner.getRank()}* ${summoner.getLp()} LP (${nbWins}W ${nbLosses}L - ${winrate}%)\n\n`;
             }
         });
 
