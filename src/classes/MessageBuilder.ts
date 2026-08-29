@@ -24,7 +24,7 @@ export default class MessageBuilder {
 		const gameDuration = this.formatGameDuration(duration);
 		this.embedBuilder.setTitle(gameSummary.result);
 		this.embedBuilder.addFields(
-			{ name: 'Champion', value: champion },
+			{ name: 'Champion', value: this.translateChampionName(champion) },
 			{ name: 'Score', value: score },
 			{ name: 'Durée', value: gameDuration },
 			{ name: 'Détails', value: `[**OPGG**](${opggLink})` }
@@ -107,5 +107,13 @@ export default class MessageBuilder {
 	buildLpDiff(lpDiff: number, gameResult: GameResult) {
 		const prefix = gameResult == GameResult.DEFEAT ? "-" : gameResult == GameResult.VICTORY ? "+" : "";
 		this.embedBuilder.addFields({ name: ' ', value: `**${prefix}${Math.abs(lpDiff)} LP**` });
+	}
+
+	private translateChampionName(champion : string) {
+		if (champion && champion === "MonkeyKing") {
+			return "Wukong";
+		} else {
+			return champion;
+		}
 	}
 }
