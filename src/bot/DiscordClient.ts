@@ -88,7 +88,7 @@ export default class DiscordClient {
                         if (changes) {
                             logger.info(`New rank : ${summoner.toString()}`);
                             if (channel) {
-                                await channel.send({ embeds: [changes.embed], files: changes.files });
+                                await channel.send({ embeds: [changes.embed] });
                             }
                         }
                         // Delay between summoners

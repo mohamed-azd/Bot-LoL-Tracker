@@ -123,7 +123,7 @@ class Summoner {
     const embed = msgBuilder.build(gameSummary, champion, score, duration, role, opggLink);
     if (!embed) return null;
 
-    return { embed, files: msgBuilder.getAttachments() };
+    return { embed };
   }
 
   async getLastMatch(matchId: string): Promise<{ champion: string; score: string, duration: number, playerName: string, playerTag: string, role: SummonerRole | undefined }> {

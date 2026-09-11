@@ -1,15 +1,15 @@
-import {AttachmentBuilder, EmbedBuilder} from 'discord.js';
-import path from 'path';
+import {EmbedBuilder} from 'discord.js';
 import GameResult from '../types/gameResult';
 import Summoner from './Summoner';
 import {GameSummary} from "../types/GameSummary";
 import {RankChangeType} from "../types/RankChangeType";
 import {SummonerRole} from "../types/SummonerRole";
 
+const ROLE_ICON_BASE_URL = 'https://cdn.jsdelivr.net/gh/Waziio/Bot-LoL-Tracker@main/assets';
+
 export default class MessageBuilder {
 	private summoner: Summoner;
 	private embedBuilder: EmbedBuilder = new EmbedBuilder();
-	private attachments: AttachmentBuilder[] = [];
 
 	constructor(summoner: Summoner) {
 		this.summoner = summoner;
@@ -36,10 +36,7 @@ export default class MessageBuilder {
 		this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/15.2.1/img/champion/${champion}.png`);
 		if (role) {
 			const roleIconFile = `${this.getRoleIconFileName(role)}.png`;
-			const roleIconPath = path.resolve(process.cwd(), 'assets', roleIconFile);
-			const attachment = new AttachmentBuilder(roleIconPath, { name: roleIconFile });
-			this.attachments.push(attachment);
-			this.embedBuilder.setAuthor({ name: ' ', iconURL: `attachment://${roleIconFile}` });
+			this.embedBuilder.setAuthor({ name: this.translateRoleName(role), iconURL: `${ROLE_ICON_BASE_URL}/${roleIconFile}` });
 		}
 
 		let message: EmbedBuilder | null;
@@ -64,10 +61,6 @@ export default class MessageBuilder {
 		this.buildLpDiff(gameSummary.lpDiff, gameSummary.result);
 
 		return message;
-	}
-
-	getAttachments(): AttachmentBuilder[] {
-		return this.attachments;
 	}
 
 	buildLp(gameResult: GameResult, lpDiff: number): EmbedBuilder {
@@ -133,6 +126,19 @@ export default class MessageBuilder {
 			return "Wukong";
 		} else {
 			return champion;
+		}
+	}
+
+	private translateRoleName(role: SummonerRole) {
+		switch (role) {
+			case "MIDDLE":
+				return "MID";
+			case "BOTTOM":
+				return "ADC";
+			case "UTILITY":
+				return "SUPPORT";
+			default:
+				return role;
 		}
 	}
 }
