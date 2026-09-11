@@ -36,7 +36,7 @@ export default class MessageBuilder {
 		this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/15.2.1/img/champion/${champion}.png`);
 		if (role) {
 			const roleIconFile = `${this.getRoleIconFileName(role)}.png`;
-			const roleIconPath = path.resolve(__dirname, '../../assets', roleIconFile);
+			const roleIconPath = path.resolve(process.cwd(), 'assets', roleIconFile);
 			const attachment = new AttachmentBuilder(roleIconPath, { name: roleIconFile });
 			this.attachments.push(attachment);
 			this.embedBuilder.setAuthor({ name: ' ', iconURL: `attachment://${roleIconFile}` });
