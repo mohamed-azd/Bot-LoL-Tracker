@@ -39,7 +39,7 @@ export default class MessageBuilder {
 			const roleIconPath = path.resolve(__dirname, '../../assets', roleIconFile);
 			const attachment = new AttachmentBuilder(roleIconPath, { name: roleIconFile });
 			this.attachments.push(attachment);
-			this.embedBuilder.setAuthor({ name: '', iconURL: `attachment://${roleIconFile}` });
+			this.embedBuilder.setAuthor({ name: ' ', iconURL: `attachment://${roleIconFile}` });
 		}
 
 		let message: EmbedBuilder | null;
