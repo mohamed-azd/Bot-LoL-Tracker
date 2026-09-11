@@ -1,12 +1,15 @@
-import {EmbedBuilder} from 'discord.js';
+import {AttachmentBuilder, EmbedBuilder} from 'discord.js';
+import path from 'path';
 import GameResult from '../types/gameResult';
 import Summoner from './Summoner';
 import {GameSummary} from "../types/GameSummary";
 import {RankChangeType} from "../types/RankChangeType";
+import {SummonerRole} from "../types/SummonerRole";
 
 export default class MessageBuilder {
 	private summoner: Summoner;
 	private embedBuilder: EmbedBuilder = new EmbedBuilder();
+	private attachments: AttachmentBuilder[] = [];
 
 	constructor(summoner: Summoner) {
 		this.summoner = summoner;
@@ -17,6 +20,7 @@ export default class MessageBuilder {
 		champion: string,
 		score: string,
 		duration: number,
+		role: SummonerRole | undefined,
 		opggLink: string
 	): EmbedBuilder | null {
 		if (gameSummary.result === GameResult.REMAKE) return null;
@@ -30,6 +34,13 @@ export default class MessageBuilder {
 			{ name: 'Détails', value: `[**OPGG**](${opggLink})` }
 		);
 		this.embedBuilder.setThumbnail(`https://ddragon.leagueoflegends.com/cdn/15.2.1/img/champion/${champion}.png`);
+		if (role) {
+			const roleIconFile = `${this.getRoleIconFileName(role)}.png`;
+			const roleIconPath = path.resolve(__dirname, '../../assets', roleIconFile);
+			const attachment = new AttachmentBuilder(roleIconPath, { name: roleIconFile });
+			this.attachments.push(attachment);
+			this.embedBuilder.setAuthor({ name: '', iconURL: `attachment://${roleIconFile}` });
+		}
 
 		let message: EmbedBuilder | null;
 		switch (gameSummary.type) {
@@ -53,6 +64,10 @@ export default class MessageBuilder {
 		this.buildLpDiff(gameSummary.lpDiff, gameSummary.result);
 
 		return message;
+	}
+
+	getAttachments(): AttachmentBuilder[] {
+		return this.attachments;
 	}
 
 	buildLp(gameResult: GameResult, lpDiff: number): EmbedBuilder {
@@ -107,6 +122,10 @@ export default class MessageBuilder {
 	buildLpDiff(lpDiff: number, gameResult: GameResult) {
 		const prefix = gameResult == GameResult.DEFEAT ? "-" : gameResult == GameResult.VICTORY ? "+" : "";
 		this.embedBuilder.addFields({ name: ' ', value: `**${prefix}${Math.abs(lpDiff)} LP**` });
+	}
+
+	private getRoleIconFileName(role: SummonerRole): string {
+		return role.toLowerCase();
 	}
 
 	private translateChampionName(champion : string) {

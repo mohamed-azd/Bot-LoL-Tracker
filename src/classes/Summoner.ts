@@ -5,6 +5,7 @@ import MessageBuilder from "./MessageBuilder";
 import RankCalculator from "../utils/RankCalculator";
 import {GameSummary} from "../types/GameSummary";
 import {RankChangeType} from "../types/RankChangeType";
+import {SummonerRole} from "../types/SummonerRole";
 
 class Summoner {
   private puuid: string;
@@ -111,7 +112,7 @@ class Summoner {
     await this.loadData();
     if (oldLastGameId === this.lastGameId) return null;
 
-    const { champion, score, duration, playerName, playerTag } = await this.getLastMatch(this.lastGameId);
+    const { champion, score, duration, playerName, playerTag, role } = await this.getLastMatch(this.lastGameId);
     if (!champion) throw new Error(`Could not retrieve match details for game ${this.lastGameId}`);
 
     const msgBuilder = new MessageBuilder(this);
@@ -119,10 +120,13 @@ class Summoner {
     if (gameSummary.result === GameResult.REMAKE) return null;
 
     const opggLink = this.getOpggLink(playerName, playerTag);
-    return msgBuilder.build(gameSummary, champion, score, duration, opggLink);
+    const embed = msgBuilder.build(gameSummary, champion, score, duration, role, opggLink);
+    if (!embed) return null;
+
+    return { embed, files: msgBuilder.getAttachments() };
   }
 
-  async getLastMatch(matchId: string): Promise<{ champion: string; score: string, duration: number, playerName: string, playerTag: string }> {
+  async getLastMatch(matchId: string): Promise<{ champion: string; score: string, duration: number, playerName: string, playerTag: string, role: SummonerRole | undefined }> {
     const matchInfos: any = await this.riotService.getGameInfos(matchId);
     const players: Array<any> = matchInfos.data.info.participants;
     const duration = matchInfos.data.info.gameDuration;
@@ -135,6 +139,7 @@ class Summoner {
     let champion = "";
     let playerName = "";
     let playerTag = "";
+    let role : SummonerRole | undefined;
 
     if (matchInfos) {
       // Find summoner
@@ -144,14 +149,15 @@ class Summoner {
           score.deaths = player.deaths;
           score.assists = player.assists;
           champion = player.championName;
-          playerName = player.riotIdGameName
-          playerTag = player.riotIdTagline
+          playerName = player.riotIdGameName;
+          playerTag = player.riotIdTagline;
+          role = player.teamPosition;
         }
       });
 
     }
 
-    return { champion: champion, score: `${score.kills} / ${score.deaths} / ${score.assists}`, duration, playerName, playerTag };
+    return { champion: champion, score: `${score.kills} / ${score.deaths} / ${score.assists}`, duration, playerName, playerTag, role };
   }
 
   getOpggLink(playerName: string, playerTag: string) : string {

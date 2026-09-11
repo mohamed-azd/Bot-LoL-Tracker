@@ -1,0 +1,1 @@
+export type SummonerRole = "TOP" | "JUNGLE" | "MIDDLE" | "BOTTOM" | "UTILITY";
