@@ -21,7 +21,9 @@ describe("Summoner Logic", () => {
         rank: string,
         lp: number,
         lastGameId: string,
-        win: boolean = true
+        win: boolean = true,
+        wins: number = 0,
+        losses: number = 0
     ) => {
         (RiotService.prototype.getSummonerByPuuid as jest.Mock).mockResolvedValue({
             data: {puuid: "test-puuid", name: "TestUser"}
@@ -36,7 +38,9 @@ describe("Summoner Logic", () => {
                 queueType: "RANKED_SOLO_5x5",
                 tier: tier,
                 rank: rank,
-                leaguePoints: lp
+                leaguePoints: lp,
+                wins: wins,
+                losses: losses
             }]
         });
 
@@ -135,6 +139,40 @@ describe("Summoner Logic", () => {
         expect(result).toBeNull();
     });
 
+    test("should detect Defeat with LP refunded (no LP change, losses incremented)", async () => {
+        // 1. Initial State: Gold IV 50 LP, 10W-5L
+        setupMocks("GOLD", "IV", 50, "EUW1_123456", true, 10, 5);
+        await summoner.loadData();
+
+        // 2. New State: same tier/rank/LP, but one more loss (LP refunded)
+        setupMocks("GOLD", "IV", 50, "EUW1_123457", false, 10, 6);
+
+        const result = await summoner.check();
+        expect(result).not.toBeNull();
+        expect(summoner.getLp()).toBe(50);
+    });
+
+    test("should still detect a real Remake (no stat change at all)", async () => {
+        // 1. Initial State
+        setupMocks("GOLD", "IV", 50, "EUW1_123456", true, 10, 5);
+        await summoner.loadData();
+
+        // 2. New game id, but nothing changed: LP, wins and losses all identical
+        setupMocks("GOLD", "IV", 50, "EUW1_123457", true, 10, 5);
+
+        const result = await summoner.check();
+        expect(result).toBeNull();
+    });
+
+    test("should detect Placement completion (UNRANKED -> Ranked)", async () => {
+        // Summoner starts UNRANKED by default (constructor), no loadData() call beforehand
+        setupMocks("GOLD", "III", 80, "EUW1_1", true, 1, 0);
+
+        const result = await summoner.check();
+        expect(result).not.toBeNull();
+        expect(summoner.getTier()).toBe(Tier.GOLD);
+    });
+
     test("compareTotalRank logic directly", () => {
         // Init: GOLD IV 50 LP
         // @ts-ignore
@@ -173,5 +211,27 @@ describe("Summoner Logic", () => {
         expect(res.result).toBe(GameResult.VICTORY);
         expect(res.type).toBe(RankChangeType.TIER);
         expect(res.lpDiff).toBe(20);
+
+        // Defeat with LP refunded: same tier/rank/LP, but one more loss recorded
+        // @ts-ignore
+        summoner.tier = Tier.GOLD; summoner.rank = "IV"; summoner.lp = 40; summoner.nbWins = 10; summoner.nbLosses = 6;
+        res = summoner.compareTotalRank(Tier.GOLD, "IV", 40, 10, 5);
+        expect(res.result).toBe(GameResult.DEFEAT);
+        expect(res.type).toBe(RankChangeType.LP);
+        expect(res.lpDiff).toBe(0);
+
+        // True remake: same tier/rank/LP/wins/losses on both sides
+        // @ts-ignore
+        summoner.nbWins = 10; summoner.nbLosses = 6;
+        res = summoner.compareTotalRank(Tier.GOLD, "IV", 40, 10, 6);
+        expect(res.result).toBe(GameResult.REMAKE);
+        expect(res.type).toBe(RankChangeType.NOTHING);
+
+        // Placement completion: UNRANKED -> GOLD IV 40 LP
+        // @ts-ignore
+        summoner.tier = Tier.GOLD; summoner.rank = "IV"; summoner.lp = 40;
+        res = summoner.compareTotalRank(Tier.UNRANKED, "", 0, 0, 0);
+        expect(res.result).toBe(GameResult.VICTORY);
+        expect(res.type).toBe(RankChangeType.PLACEMENT);
     });
 });

@@ -107,6 +107,8 @@ class Summoner {
     const oldTier = this.tier;
     const oldRank = this.rank;
     const oldLp = this.lp;
+    const oldNbWins = this.nbWins;
+    const oldNbLosses = this.nbLosses;
     const oldLastGameId = this.lastGameId;
 
     await this.loadData();
@@ -116,7 +118,7 @@ class Summoner {
     if (!champion) throw new Error(`Could not retrieve match details for game ${this.lastGameId}`);
 
     const msgBuilder = new MessageBuilder(this);
-    const gameSummary = this.compareTotalRank(oldTier, oldRank, oldLp);
+    const gameSummary = this.compareTotalRank(oldTier, oldRank, oldLp, oldNbWins, oldNbLosses);
     if (gameSummary.result === GameResult.REMAKE) return null;
 
     const opggLink = this.getOpggLink(playerName, playerTag);
@@ -165,7 +167,7 @@ class Summoner {
     return `https://www.op.gg/summoners/euw/${playerName}-${playerTag}`
   }
 
-  compareTotalRank(currentTier: Tier, currentRank: string, currentLp: number): GameSummary {
+  compareTotalRank(currentTier: Tier, currentRank: string, currentLp: number, currentNbWins: number = 0, currentNbLosses: number = 0): GameSummary {
     const lpDiff = RankCalculator.getLpDiff(currentTier, currentRank, currentLp, this.tier, this.rank, this.lp);
 
     // Same tier
@@ -176,9 +178,12 @@ class Summoner {
         if (this.lp > currentLp) return { result: GameResult.VICTORY, type: RankChangeType.LP, lpDiff: lpDiff };
         // Loss lp
         if (this.lp < currentLp) return { result: GameResult.DEFEAT, type: RankChangeType.LP, lpDiff: lpDiff };
-        // Loss at 0lp
-        if (this.lp == 0 && currentLp == 0) return { result: GameResult.DEFEAT, type: RankChangeType.LP, lpDiff: 0 };
-        // Game remake
+        // LP unchanged: rely on the ranked W/L record to know what actually happened
+        // Loss counted but LP refunded (AFK protection, etc.), or the historical "loss at 0 LP" case
+        if (this.nbLosses > currentNbLosses) return { result: GameResult.DEFEAT, type: RankChangeType.LP, lpDiff: 0 };
+        // Win counted with no LP gain
+        if (this.nbWins > currentNbWins) return { result: GameResult.VICTORY, type: RankChangeType.LP, lpDiff: 0 };
+        // Nothing counted at all: true remake
         return { result: GameResult.REMAKE, type: RankChangeType.NOTHING, lpDiff: 0 };
       } else if (this.compareRank(currentRank, this.rank) === "downgrade") {
         // Loss rank
@@ -191,6 +196,10 @@ class Summoner {
       // Loss tier
       return { result: GameResult.DEFEAT, type: RankChangeType.TIER, lpDiff: lpDiff };
     } else if (this.compareTier(currentTier, this.tier) === "upgrade") {
+      // End of placement games
+      if (currentTier === Tier.UNRANKED) {
+        return { result: GameResult.VICTORY, type: RankChangeType.PLACEMENT, lpDiff: lpDiff };
+      }
       // Win tier
       return { result: GameResult.VICTORY, type: RankChangeType.TIER, lpDiff: lpDiff };
     } else {

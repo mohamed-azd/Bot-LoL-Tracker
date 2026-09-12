@@ -53,27 +53,36 @@ export default class MessageBuilder {
 				message = this.buildTier(gameSummary.result);
 				break;
 			}
+			case RankChangeType.PLACEMENT: {
+				message = this.buildPlacement();
+				break;
+			}
 			default: {
 				message = null;
 				break;
 			}
 		}
-		this.buildLpDiff(gameSummary.lpDiff, gameSummary.result);
+		if (gameSummary.type !== RankChangeType.PLACEMENT) {
+			this.buildLpDiff(gameSummary.lpDiff, gameSummary.result);
+		}
 
 		return message;
 	}
 
 	buildLp(gameResult: GameResult, lpDiff: number): EmbedBuilder {
-		if (gameResult === GameResult.DEFEAT) {
-			if (lpDiff === 0) {
+		let description = this.summoner.getTotalRank();
+		if (gameResult === GameResult.DEFEAT && lpDiff === 0) {
+			if (this.summoner.getLp() === 0) {
 				this.embedBuilder
 					.addFields({
 						name: ' ',
 						value: `Aïe aïe aïe, défaite à 0 LP pour ${this.summoner.getDiscordAt()}\nTu vas descendre ! :joy: :index_pointing_at_the_viewer: `,
 					});
+			} else {
+				description = `*LP remboursés, enculé va...*\n\n${description}`;
 			}
 		}
-		this.embedBuilder.setDescription(this.summoner.getTotalRank()).setColor(gameResult == GameResult.VICTORY ? 'Green' : 'Red');
+		this.embedBuilder.setDescription(description).setColor(gameResult == GameResult.VICTORY ? 'Green' : 'Red');
 		return this.embedBuilder;
 	}
 
@@ -100,6 +109,12 @@ export default class MessageBuilder {
 		}
 		description += `\n\n${this.summoner.getTotalRank()}`;
 		this.embedBuilder.setDescription(description).setColor(color);
+		return this.embedBuilder;
+	}
+
+	buildPlacement(): EmbedBuilder {
+		const description = `*Fin des games de placement*\n\n${this.summoner.getTotalRank()}`;
+		this.embedBuilder.setDescription(description).setColor('Gold');
 		return this.embedBuilder;
 	}
 

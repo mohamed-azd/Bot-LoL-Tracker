@@ -3,4 +3,5 @@ export enum RankChangeType {
     LP = "LP",
     RANK = "RANK",
     TIER = "TIER",
+    PLACEMENT = "PLACEMENT",
 }
